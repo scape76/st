@@ -10,8 +10,17 @@
 // Helper function to format DateTime
 std::string formatDateTimeNotif(const DateTime& dt) {
     auto time = std::chrono::system_clock::to_time_t(dt);
+    std::tm tm_local = {};
+    
+    #ifdef _WIN32
+    localtime_s(&tm_local, &time);
+    #else
+    tm_local = *std::localtime(&time);
+    #endif
+    
+    // Use local time to preserve user input
     std::stringstream ss;
-    ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M");
+    ss << std::put_time(&tm_local, "%Y-%m-%d %H:%M");
     return ss.str();
 }
 
@@ -104,11 +113,12 @@ bool DeadlineNotification::shouldTrigger(const DateTime& currentTime) const {
     auto timeToDeadline = std::chrono::duration_cast<std::chrono::hours>(
         deadline - currentTime).count();
     
-    // Convert days to hours for comparison
-    auto hoursBeforeDeadline = daysBeforeDeadline * 24;
+    // Calculate the range for triggering (between daysBeforeDeadline and daysBeforeDeadline-1)
+    auto upperBound = daysBeforeDeadline * 24;
+    auto lowerBound = upperBound - 24; // One day window for notifications
     
-    // Trigger if we're within the notification window and haven't passed the deadline
-    return (timeToDeadline <= hoursBeforeDeadline && timeToDeadline > 0);
+    // Trigger if we're within the notification window
+    return (timeToDeadline <= upperBound && timeToDeadline > lowerBound);
 }
 
 void DeadlineNotification::display() const {
@@ -165,10 +175,32 @@ void NotificationManager::removeNotification(size_t index) {
 
 void NotificationManager::checkNotifications() {
     auto now = std::chrono::system_clock::now();
+    bool foundNotifications = false;
+    
+    std::cout << "Current time: " << formatDateTimeNotif(now) << std::endl;
     
     for (const auto& notification : notifications) {
         if (notification->shouldTrigger(now)) {
             notification->display();
+            foundNotifications = true;
+        }
+    }
+    
+    if (!foundNotifications) {
+        if (notifications.empty()) {
+            std::cout << "You have no notifications set up." << std::endl;
+        } else {
+            std::cout << "No notifications are due at this time." << std::endl;
+            
+            // Display when the next notification would be due
+            std::cout << "You have " << notifications.size() << " notification(s) scheduled." << std::endl;
+            
+            if (auto deadlineNotif = std::dynamic_pointer_cast<DeadlineNotification>(notifications[0])) {
+                if (auto assignment = deadlineNotif->getAssignment()) {
+                    std::cout << "Next deadline: " << assignment->getTitle() 
+                              << " on " << formatDateTimeNotif(assignment->getDeadline()) << std::endl;
+                }
+            }
         }
     }
 }

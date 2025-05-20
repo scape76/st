@@ -6,10 +6,14 @@
 #include <chrono>
 #include <vector>
 #include <iostream>
+#include "AssignmentState.h"
+#include "Memento.h"
 
 // Forward declaration
 class Course;
 class Notification;
+class AssignmentState;
+class AssignmentMemento;
 
 // Using a type alias for date/time
 using DateTime = std::chrono::system_clock::time_point;
@@ -22,6 +26,15 @@ private:
     DateTime deadline;
     std::shared_ptr<Course> course;
     std::vector<std::shared_ptr<Notification>> notifications;
+    bool completed;
+    int marks;
+    float progress;
+    std::shared_ptr<AssignmentState> state;
+    friend class AssignmentState;
+    friend class NotStartedState;
+    friend class InProgressState;
+    friend class CompletedState;
+    friend class OverdueState;
 
 public:
     // Constructor
@@ -32,28 +45,47 @@ public:
     // Virtual destructor for polymorphism
     virtual ~Assignment() = default;
     
+    // State pattern methods
+    void setState(std::shared_ptr<AssignmentState> state);
+    std::shared_ptr<AssignmentState> getState() const;
+    void startAssignment();
+    void updateProgress(float percentage);
+    void checkDeadline();
+    std::string getStateName() const;
+    std::string getStateDescription() const;
+    
     // Getters
-    std::string getTitle() const;
-    std::string getDescription() const;
-    DateTime getDeadline() const;
-    std::shared_ptr<Course> getCourse() const;
-    std::vector<std::shared_ptr<Notification>> getNotifications() const;
+    virtual std::string getTitle() const;
+    virtual std::string getDescription() const;
+    virtual DateTime getDeadline() const;
+    virtual std::shared_ptr<Course> getCourse() const;
+    virtual std::vector<std::shared_ptr<Notification>> getNotifications() const;
+    virtual bool isCompleted() const;
+    virtual int getMarks() const;
+    virtual float getProgress() const;
     
     // Setters
-    void setTitle(const std::string& title);
-    void setDescription(const std::string& description);
-    void setDeadline(const DateTime& deadline);
-    void setCourse(std::shared_ptr<Course> course);
+    virtual void setTitle(const std::string& title);
+    virtual void setDescription(const std::string& description);
+    virtual void setDeadline(const DateTime& deadline);
+    virtual void setCourse(std::shared_ptr<Course> course);
+    virtual void setCompleted(bool completed);
+    virtual void setMarks(int marks);
+    virtual void setProgress(float progress);
     
     // Notification management
-    void addNotification(std::shared_ptr<Notification> notification);
-    void removeNotification(size_t index);
+    virtual void addNotification(std::shared_ptr<Notification> notification);
+    virtual void removeNotification(size_t index);
     
     // Display assignment information
     virtual void displayInfo() const;
     
     // Assignment types
     virtual std::string getType() const = 0;
+    
+    // Memento pattern methods
+    std::shared_ptr<AssignmentMemento> createMemento() const;
+    void restoreFromMemento(const std::shared_ptr<AssignmentMemento>& memento);
 };
 
 // Concrete Assignment types

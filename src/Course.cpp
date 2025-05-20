@@ -76,6 +76,30 @@ void Course::displayInfo() const {
     }
 }
 
+// Memento pattern methods
+std::shared_ptr<CourseMemento> Course::createMemento() const {
+    std::vector<std::string> assignmentTitles;
+    for (const auto& assignment : assignments) {
+        assignmentTitles.push_back(assignment->getTitle());
+    }
+    
+    return std::make_shared<CourseMemento>(
+        name,
+        code,
+        description,
+        assignmentTitles
+    );
+}
+
+void Course::restoreFromMemento(const std::shared_ptr<CourseMemento>& memento) {
+    name = memento->getName();
+    code = memento->getCode();
+    description = memento->getDescription();
+    
+    // Note: Assignment references can't be fully restored from the memento
+    // as we only store titles. The caller must reconnect assignments separately.
+}
+
 // CourseBuilder implementation
 CourseBuilder& CourseBuilder::setName(const std::string& name) {
     this->name = name;
