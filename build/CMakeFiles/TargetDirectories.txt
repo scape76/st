@@ -1,0 +1,7 @@
+/Users/dan/code/st/build/CMakeFiles/academic_tracker.dir
+/Users/dan/code/st/build/CMakeFiles/edit_cache.dir
+/Users/dan/code/st/build/CMakeFiles/rebuild_cache.dir
+/Users/dan/code/st/build/CMakeFiles/list_install_components.dir
+/Users/dan/code/st/build/CMakeFiles/install.dir
+/Users/dan/code/st/build/CMakeFiles/install/local.dir
+/Users/dan/code/st/build/CMakeFiles/install/strip.dir
