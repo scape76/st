@@ -8,24 +8,24 @@
 #include <string>
 #include <vector>
 
-#include "../include/Assignment.h"
-#include "../include/AssignmentBuilder.h"
-#include "../include/AssignmentDecorator.h"
-#include "../include/AssignmentProcess.h"
-#include "../include/AssignmentState.h"
-#include "../include/CompositeAssignment.h"
-#include "../include/Course.h"
+#include "../include/CompositeTask.h"
 #include "../include/GradingSystemAdapter.h"
 #include "../include/Memento.h"
 #include "../include/MockExternalSystems.h"
 #include "../include/Notification.h"
 #include "../include/Observer.h"
+#include "../include/Subject.h"
+#include "../include/Task.h"
+#include "../include/TaskBuilder.h"
+#include "../include/TaskDecorator.h"
+#include "../include/TaskProcess.h"
+#include "../include/TaskState.h"
 
-// Forward declaration for ObservableAssignment
-class ObservableAssignment;
+// Forward declaration for ObservableTask
+class ObservableTask;
 
-// Global containers to store courses and assignments
-std::vector<std::shared_ptr<Course>> courses;
+// Global containers to store subjects and tasks
+std::vector<std::shared_ptr<Subject>> subjects;
 
 // Global grading system facade with mock implementations
 std::shared_ptr<GradingSystemFacade> gradingSystemFacade;
@@ -34,7 +34,6 @@ std::shared_ptr<GradingSystemFacade> gradingSystemFacade;
 MementoCaretaker caretaker;
 
 // Global observers
-std::shared_ptr<StudentObserver> studentObserver;
 std::shared_ptr<DeadlineObserver> deadlineObserver;
 
 // Initialize application components
@@ -63,8 +62,6 @@ void initializeApplication() {
   gradingSystemFacade->setActiveGradingSystem("University");
 
   // Initialize observers
-  studentObserver =
-      std::make_shared<StudentObserver>("S12345", "Default Student");
   deadlineObserver = std::make_shared<DeadlineObserver>(3); // 3 days warning
 }
 
@@ -165,110 +162,109 @@ DateTime getDateTimeInput(const std::string &prompt) {
   return time_point;
 }
 
-// Function to create a new course
-void createCourse() {
-  std::cout << "\n===== Create New Course =====\n";
+// Function to create a new subject
+void createSubject() {
+  std::cout << "\n===== Create New Subject =====\n";
 
   std::string name, code, description;
 
   do {
-    name = getStringInput("Enter course name: ");
+    name = getStringInput("Enter subject name: ");
     if (name.empty()) {
-      std::cout << "Course name cannot be empty. Please try again."
+      std::cout << "Subject name cannot be empty. Please try again."
                 << std::endl;
     }
   } while (name.empty());
 
   do {
-    code = getStringInput("Enter course code: ");
+    code = getStringInput("Enter subject code: ");
     if (code.empty()) {
-      std::cout << "Course code cannot be empty. Please try again."
+      std::cout << "Subject code cannot be empty. Please try again."
                 << std::endl;
     }
   } while (code.empty());
 
-  description = getStringInput("Enter course description (optional): ");
+  description = getStringInput("Enter subject description (optional): ");
 
-  // Using the Builder pattern to create the course
+  // Using the Builder pattern to create the subject
   try {
-    auto course = CourseBuilder()
-                      .setName(name)
-                      .setCode(code)
-                      .setDescription(description)
-                      .build();
+    auto subject = SubjectBuilder()
+                       .setName(name)
+                       .setCode(code)
+                       .setDescription(description)
+                       .build();
 
-    courses.push_back(course);
-    std::cout << "Course created successfully!\n";
+    subjects.push_back(subject);
+    std::cout << "Subject created successfully!\n";
   } catch (const std::exception &e) {
-    std::cout << "Error creating course: " << e.what() << std::endl;
+    std::cout << "Error creating subject: " << e.what() << std::endl;
   }
 }
 
-// Function to list all courses
-void listCourses() {
-  std::cout << "\n===== Courses =====\n";
+// Function to list all subjects
+void listSubjects() {
+  std::cout << "\n===== Subjects =====\n";
 
-  if (courses.empty()) {
-    std::cout << "No courses available. Create a course first.\n";
+  if (subjects.empty()) {
+    std::cout << "No subjects available. Create a subject first.\n";
     return;
   }
 
-  for (size_t i = 0; i < courses.size(); ++i) {
-    std::cout << i + 1 << ". " << courses[i]->getName() << " ("
-              << courses[i]->getCode() << ")\n";
+  for (size_t i = 0; i < subjects.size(); ++i) {
+    std::cout << i + 1 << ". " << subjects[i]->getName() << " ("
+              << subjects[i]->getCode() << ")\n";
   }
 }
 
-// Function to select a course from the list
-std::shared_ptr<Course> selectCourse() {
-  if (courses.empty()) {
-    std::cout << "No courses available. Create a course first.\n";
+// Function to select a subject from the list
+std::shared_ptr<Subject> selectSubject() {
+  if (subjects.empty()) {
+    std::cout << "No subjects available. Create a subject first.\n";
     return nullptr;
   }
 
-  listCourses();
+  listSubjects();
   int choice = getIntInput(
-      "Select a course (1-" + std::to_string(courses.size()) + "): ", 1,
-      courses.size());
-  return courses[choice - 1];
+      "Select a subject (1-" + std::to_string(subjects.size()) + "): ", 1,
+      subjects.size());
+  return subjects[choice - 1];
 }
 
-// Function to create a new assignment
-void createAssignment() {
-  std::cout << "\n===== Create New Assignment =====\n";
+// Function to create a new task
+void createTask() {
+  std::cout << "\n===== Create New Task =====\n";
 
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
   std::string title;
   do {
-    title = getStringInput("Enter assignment title: ");
+    title = getStringInput("Enter task title: ");
     if (title.empty()) {
-      std::cout << "Assignment title cannot be empty. Please try again."
-                << std::endl;
+      std::cout << "Task title cannot be empty. Please try again." << std::endl;
     }
   } while (title.empty());
 
   std::string description =
-      getStringInput("Enter assignment description (optional): ");
-  DateTime deadline = getDateTimeInput("Enter assignment deadline");
+      getStringInput("Enter task description (optional): ");
+  DateTime deadline = getDateTimeInput("Enter task deadline");
 
-  // Show assignment type options
-  std::cout << "Select assignment type:\n";
-  std::cout << "1. Homework\n";
+  // Show task type options
+  std::cout << "Select task type:\n";
+  std::cout << "1. Lab\n";
   std::cout << "2. Project\n";
   std::cout << "3. Exam\n";
   int typeChoice = getIntInput("Enter your choice (1-3): ", 1, 3);
 
-  // Using the Builder pattern and Factory method to create the assignment
+  // Using the Builder pattern and Factory method to create the task
   try {
-    AssignmentBuilder builder;
+    TaskBuilder builder;
     builder.setTitle(title).setDescription(description).setDeadline(deadline);
 
     switch (typeChoice) {
     case 1:
-      builder.asHomework();
+      builder.asLab();
       break;
     case 2:
       builder.asProject();
@@ -278,11 +274,11 @@ void createAssignment() {
       break;
     }
 
-    auto assignment = builder.build();
-    course->addAssignment(assignment);
+    auto task = builder.build();
+    subject->addTask(task);
 
     // Ask if the user wants to add a notification
-    std::cout << "Do you want to add a notification for this assignment?\n";
+    std::cout << "Do you want to add a notification for this task?\n";
     std::cout << "1. Yes\n";
     std::cout << "2. No\n";
     int notifChoice = getIntInput("Enter your choice (1-2): ", 1, 2);
@@ -294,7 +290,7 @@ void createAssignment() {
       std::string message = "Reminder for " + title;
 
       auto notification =
-          std::make_shared<DeadlineNotification>(message, assignment, days);
+          std::make_shared<DeadlineNotification>(message, task, days);
 
       // Using the Singleton pattern to access the NotificationManager
       NotificationManager::getInstance().addNotification(notification);
@@ -302,76 +298,74 @@ void createAssignment() {
                 << " days before the deadline.\n";
     }
 
-    std::cout << "Assignment created successfully!\n";
+    std::cout << "Task created successfully!\n";
   } catch (const std::exception &e) {
-    std::cout << "Error creating assignment: " << e.what() << std::endl;
+    std::cout << "Error creating task: " << e.what() << std::endl;
   }
 }
 
-// Function to list assignments for a course
-void listAssignments() {
-  std::cout << "\n===== Assignments =====\n";
+// Function to list tasks for a subject
+void listTasks() {
+  std::cout << "\n===== Tasks =====\n";
 
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
-  auto assignments = course->getAssignments();
+  auto tasks = subject->getTasks();
 
-  if (assignments.empty()) {
-    std::cout << "No assignments for this course.\n";
+  if (tasks.empty()) {
+    std::cout << "No tasks for this subject.\n";
     return;
   }
 
-  std::cout << "Assignments for " << course->getName() << ":\n";
-  for (size_t i = 0; i < assignments.size(); ++i) {
-    auto &assignment = assignments[i];
+  std::cout << "Tasks for " << subject->getName() << ":\n";
+  for (size_t i = 0; i < tasks.size(); ++i) {
+    auto &task = tasks[i];
 
-    auto time = std::chrono::system_clock::to_time_t(assignment->getDeadline());
+    auto time = std::chrono::system_clock::to_time_t(task->getDeadline());
     std::stringstream ss;
     ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M");
 
-    std::cout << i + 1 << ". " << assignment->getTitle() << " ("
-              << assignment->getType() << ")"
-              << " - Due: " << ss.str() << "\n";
+    std::cout << i + 1 << ". " << task->getTitle() << " (" << task->getType()
+              << ")" << " - Due: " << ss.str() << "\n";
   }
 }
 
-// Function to view assignment details
-void viewAssignmentDetails() {
-  std::cout << "\n===== Assignment Details =====\n";
+// Function to view task details
+void viewTaskDetails() {
+  std::cout << "\n===== Task Details =====\n";
 
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
-  auto assignments = course->getAssignments();
+  auto tasks = subject->getTasks();
 
-  if (assignments.empty()) {
-    std::cout << "No assignments for this course.\n";
+  if (tasks.empty()) {
+    std::cout << "No tasks for this subject.\n";
     return;
   }
 
-  std::cout << "Assignments for " << course->getName() << ":\n";
-  for (size_t i = 0; i < assignments.size(); ++i) {
-    std::cout << i + 1 << ". " << assignments[i]->getTitle() << "\n";
+  std::cout << "Tasks for " << subject->getName() << ":\n";
+  for (size_t i = 0; i < tasks.size(); ++i) {
+    std::cout << i + 1 << ". " << tasks[i]->getTitle() << "\n";
   }
 
-  int choice = getIntInput("Select an assignment (1-" +
-                               std::to_string(assignments.size()) + "): ",
-                           1, assignments.size());
-  auto assignment = assignments[choice - 1];
+  int choice = getIntInput(
+      "Select an task (1-" + std::to_string(tasks.size()) + "): ", 1,
+      tasks.size());
+  auto task = tasks[choice - 1];
 
   std::cout << "\n";
-  assignment->displayInfo();
+  task->displayInfo();
 
-  // Show notifications for this assignment
+  // Show notifications for this task
   auto &notificationManager = NotificationManager::getInstance();
-  auto notifications =
-      notificationManager.getNotificationsForAssignment(assignment);
+  auto notifications = notificationManager.getNotificationsForTask(task);
 
   if (!notifications.empty()) {
-    std::cout << "\nNotifications for this assignment:\n";
+    std::cout << "\nNotifications for this task:\n";
     for (size_t i = 0; i < notifications.size(); ++i) {
       auto &notification = notifications[i];
 
@@ -391,7 +385,7 @@ void viewAssignmentDetails() {
       }
     }
   } else {
-    std::cout << "\nNo notifications set for this assignment.\n";
+    std::cout << "\nNo notifications set for this task.\n";
   }
 }
 
@@ -423,14 +417,12 @@ void viewAllNotifications() {
 
     if (auto deadlineNotif =
             std::dynamic_pointer_cast<DeadlineNotification>(notification)) {
-      if (auto assignment = deadlineNotif->getAssignment()) {
-        auto time =
-            std::chrono::system_clock::to_time_t(assignment->getDeadline());
+      if (auto task = deadlineNotif->getTask()) {
+        auto time = std::chrono::system_clock::to_time_t(task->getDeadline());
         std::stringstream ss;
         ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M");
 
-        std::cout << i + 1 << ". " << assignment->getTitle()
-                  << " - Due: " << ss.str()
+        std::cout << i + 1 << ". " << task->getTitle() << " - Due: " << ss.str()
                   << " - Reminder: " << deadlineNotif->getDaysBeforeDeadline()
                   << " days before deadline\n";
       }
@@ -454,13 +446,13 @@ void saveApplicationState() {
       getStringInput("Enter a description for this save point: ");
   auto memento = std::make_shared<AcademicProgressMemento>(description);
 
-  // Save courses
-  for (const auto &course : courses) {
-    memento->addCourseMemento(course->createMemento());
+  // Save subjects
+  for (const auto &subject : subjects) {
+    memento->addSubjectMemento(subject->createMemento());
 
-    // Save assignments for this course
-    for (const auto &assignment : course->getAssignments()) {
-      memento->addAssignmentMemento(assignment->createMemento());
+    // Save tasks for this subject
+    for (const auto &task : subject->getTasks()) {
+      memento->addTaskMemento(task->createMemento());
     }
   }
 
@@ -516,294 +508,278 @@ void restoreApplicationState() {
   auto selectedMemento = mementos[choice - 1];
 
   // Clear current state
-  courses.clear();
+  subjects.clear();
 
-  // First restore courses
-  std::map<std::string, std::shared_ptr<Course>> courseMap;
-  for (const auto &courseMemento : selectedMemento->getCourses()) {
-    auto course = std::make_shared<Course>("", "", "");
-    course->restoreFromMemento(courseMemento);
-    courses.push_back(course);
-    courseMap[course->getCode()] = course;
+  // First restore subjects
+  std::map<std::string, std::shared_ptr<Subject>> subjectMap;
+  for (const auto &subjectMemento : selectedMemento->getSubjects()) {
+    auto subject = std::make_shared<Subject>("", "", "");
+    subject->restoreFromMemento(subjectMemento);
+    subjects.push_back(subject);
+    subjectMap[subject->getCode()] = subject;
   }
 
-  // Then restore assignments and link them to courses
-  for (const auto &assignmentMemento : selectedMemento->getAssignments()) {
-    // Create the appropriate type of assignment
-    std::shared_ptr<Assignment> assignment;
-    std::string assignmentType = assignmentMemento->getState();
-    if (assignmentType == "Homework") {
-      assignment = std::make_shared<HomeworkAssignment>(
-          "", std::chrono::system_clock::now(), "");
-    } else if (assignmentType == "Project") {
-      assignment = std::make_shared<ProjectAssignment>(
-          "", std::chrono::system_clock::now(), "");
-    } else if (assignmentType == "Exam") {
-      assignment = std::make_shared<ExamAssignment>(
-          "", std::chrono::system_clock::now(), "");
+  // Then restore tasks and link them to subjects
+  for (const auto &taskMemento : selectedMemento->getTasks()) {
+    // Create the appropriate type of task
+    std::shared_ptr<Task> task;
+    std::string taskType = taskMemento->getState();
+    if (taskType == "Lab") {
+      task =
+          std::make_shared<LabTask>("", std::chrono::system_clock::now(), "");
+    } else if (taskType == "Project") {
+      task = std::make_shared<ProjectTask>("", std::chrono::system_clock::now(),
+                                           "");
+    } else if (taskType == "Exam") {
+      task =
+          std::make_shared<ExamTask>("", std::chrono::system_clock::now(), "");
     } else {
-      assignment = std::make_shared<HomeworkAssignment>(
-          "", std::chrono::system_clock::now(), "");
+      task =
+          std::make_shared<LabTask>("", std::chrono::system_clock::now(), "");
     }
 
-    // Restore assignment state
-    assignment->restoreFromMemento(assignmentMemento);
+    // Restore task state
+    task->restoreFromMemento(taskMemento);
 
-    // Link to course
-    std::string courseCode = assignmentMemento->getCourseCode();
-    if (courseMap.find(courseCode) != courseMap.end()) {
-        courseMap[courseCode]->addAssignment(assignment);
+    // Link to subject
+    std::string subjectCode = taskMemento->getSubjectCode();
+    if (subjectMap.find(subjectCode) != subjectMap.end()) {
+      subjectMap[subjectCode]->addTask(task);
     }
   }
 
   std::cout << "Application state restored successfully." << std::endl;
-  std::cout << "Restored " << courses.size() << " courses." << std::endl;
+  std::cout << "Restored " << subjects.size() << " subjects." << std::endl;
 }
 
-// Function to update an assignment's state
-void updateAssignmentState() {
-  std::cout << "\n===== Update Assignment State =====\n";
+// Function to update an task's state
+void updateTaskState() {
+  std::cout << "\n===== Update Task State =====\n";
 
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
-  auto assignments = course->getAssignments();
+  auto tasks = subject->getTasks();
 
-  if (assignments.empty()) {
-    std::cout << "No assignments for this course.\n";
+  if (tasks.empty()) {
+    std::cout << "No tasks for this subject.\n";
     return;
   }
 
-  std::cout << "Assignments for " << course->getName() << ":\n";
-  for (size_t i = 0; i < assignments.size(); ++i) {
-    auto &assignment = assignments[i];
-    std::cout << i + 1 << ". " << assignment->getTitle()
-              << " - Current state: " << assignment->getStateName() << "\n";
+  std::cout << "Tasks for " << subject->getName() << ":\n";
+  for (size_t i = 0; i < tasks.size(); ++i) {
+    auto &task = tasks[i];
+    std::cout << i + 1 << ". " << task->getTitle()
+              << " - Current state: " << task->getStateName() << "\n";
   }
 
-  int choice = getIntInput("Select an assignment (1-" +
-                               std::to_string(assignments.size()) + "): ",
-                           1, assignments.size());
-  auto assignment = assignments[choice - 1];
+  int choice = getIntInput(
+      "Select an task (1-" + std::to_string(tasks.size()) + "): ", 1,
+      tasks.size());
+  auto task = tasks[choice - 1];
 
-  std::cout << "Current state: " << assignment->getStateName() << std::endl;
-  std::cout << "State description: " << assignment->getStateDescription()
+  std::cout << "Current state: " << task->getStateName() << std::endl;
+  std::cout << "State description: " << task->getStateDescription()
             << std::endl;
 
   std::cout << "Select action:\n";
-  std::cout << "1. Start assignment\n";
+  std::cout << "1. Start task\n";
   std::cout << "2. Update progress\n";
-  std::cout << "3. Complete assignment\n";
+  std::cout << "3. Complete task\n";
   std::cout << "4. Check deadline\n";
 
   int action = getIntInput("Enter your choice (1-4): ", 1, 4);
 
   switch (action) {
   case 1:
-    assignment->startAssignment();
-    std::cout << "Assignment started. New state: " << assignment->getStateName()
+    task->startTask();
+    std::cout << "Task started. New state: " << task->getStateName()
               << std::endl;
     break;
   case 2: {
     float progress = getIntInput("Enter progress percentage (0-100): ", 0, 100);
-    assignment->updateProgress(progress);
-    std::cout << "Progress updated. New state: " << assignment->getStateName()
+    task->updateProgress(progress);
+    std::cout << "Progress updated. New state: " << task->getStateName()
               << std::endl;
     break;
   }
   case 3: {
     int marks = getIntInput("Enter marks achieved (0-100): ", 0, 100);
-    assignment->getState()->complete(marks);
-    std::cout << "Assignment completed. New state: "
-              << assignment->getStateName() << std::endl;
+    task->getState()->complete(marks);
+    std::cout << "Task completed. New state: " << task->getStateName()
+              << std::endl;
     break;
   }
   case 4:
-    assignment->checkDeadline();
-    std::cout << "Deadline checked. Current state: "
-              << assignment->getStateName() << std::endl;
+    task->checkDeadline();
+    std::cout << "Deadline checked. Current state: " << task->getStateName()
+              << std::endl;
     break;
   default:
     std::cout << "Invalid action." << std::endl;
   }
 }
 
-// Function to process an assignment using the Template Method pattern
-void processAssignmentWithTemplate() {
-  std::cout << "\n===== Process Assignment with Template Method =====\n";
+// Function to process an task using the Template Method pattern
+void processTaskWithTemplate() {
+  std::cout << "\n===== Process Task with Template Method =====\n";
 
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
-  auto assignments = course->getAssignments();
+  auto tasks = subject->getTasks();
 
-  if (assignments.empty()) {
-    std::cout << "No assignments for this course.\n";
+  if (tasks.empty()) {
+    std::cout << "No tasks for this subject.\n";
     return;
   }
 
-  std::cout << "Assignments for " << course->getName() << ":\n";
-  for (size_t i = 0; i < assignments.size(); ++i) {
-    auto &assignment = assignments[i];
-    std::cout << i + 1 << ". " << assignment->getTitle() << " ("
-              << assignment->getType() << ")\n";
+  std::cout << "Tasks for " << subject->getName() << ":\n";
+  for (size_t i = 0; i < tasks.size(); ++i) {
+    auto &task = tasks[i];
+    std::cout << i + 1 << ". " << task->getTitle() << " (" << task->getType()
+              << ")\n";
   }
 
-  int choice = getIntInput("Select an assignment to process (1-" +
-                               std::to_string(assignments.size()) + "): ",
-                           1, assignments.size());
-  auto assignment = assignments[choice - 1];
+  int choice = getIntInput(
+      "Select an task to process (1-" + std::to_string(tasks.size()) + "): ", 1,
+      tasks.size());
+  auto task = tasks[choice - 1];
 
   std::string submission = getStringInput("Enter submission content: ");
 
-  // Create the appropriate processor based on assignment type
-  std::shared_ptr<AssignmentProcess> processor;
+  // Create the appropriate processor based on task type
+  std::shared_ptr<TaskProcess> processor;
 
-  if (auto hw = std::dynamic_pointer_cast<HomeworkAssignment>(assignment)) {
-    processor = std::make_shared<HomeworkProcess>();
-  } else if (auto proj =
-                 std::dynamic_pointer_cast<ProjectAssignment>(assignment)) {
+  if (auto hw = std::dynamic_pointer_cast<LabTask>(task)) {
+    processor = std::make_shared<LabProcess>();
+  } else if (auto proj = std::dynamic_pointer_cast<ProjectTask>(task)) {
     processor = std::make_shared<ProjectProcess>();
-  } else if (auto exam =
-                 std::dynamic_pointer_cast<ExamAssignment>(assignment)) {
+  } else if (auto exam = std::dynamic_pointer_cast<ExamTask>(task)) {
     processor = std::make_shared<ExamProcess>();
   } else {
-    // Default to homework processor
-    processor = std::make_shared<HomeworkProcess>();
+    // Default to lab processor
+    processor = std::make_shared<LabProcess>();
   }
 
-  // Process the assignment using the template method
-  processor->processAssignment(assignment, submission);
+  // Process the task using the template method
+  processor->processTask(task, submission);
 }
 
-// Function to subscribe to assignment updates using the Observer pattern
-void subscribeToAssignment() {
-  std::cout << "\n===== Subscribe to Assignment Updates =====\n";
+// Function to subscribe to task updates using the Observer pattern
+void subscribeToTask() {
+  std::cout << "\n===== Subscribe to Task Updates =====\n";
 
-  // Make sure the student observer is set up
-  if (!studentObserver) {
-    std::string name = getStringInput("Enter your name: ");
-    std::string id = getStringInput("Enter your student ID: ");
-    studentObserver = std::make_shared<StudentObserver>(id, name);
-  }
-
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
-  auto assignments = course->getAssignments();
+  auto tasks = subject->getTasks();
 
-  if (assignments.empty()) {
-    std::cout << "No assignments for this course.\n";
+  if (tasks.empty()) {
+    std::cout << "No tasks for this subject.\n";
     return;
   }
 
-  std::cout << "Assignments for " << course->getName() << ":\n";
-  for (size_t i = 0; i < assignments.size(); ++i) {
-    auto &assignment = assignments[i];
-    std::cout << i + 1 << ". " << assignment->getTitle() << " ("
-              << assignment->getType() << ")\n";
+  std::cout << "Tasks for " << subject->getName() << ":\n";
+  for (size_t i = 0; i < tasks.size(); ++i) {
+    auto &task = tasks[i];
+    std::cout << i + 1 << ". " << task->getTitle() << " (" << task->getType()
+              << ")\n";
   }
 
-  int choice = getIntInput("Select an assignment to subscribe to (1-" +
-                             std::to_string(assignments.size()) + "): ",
-                           1, assignments.size());
-  auto assignment = assignments[choice - 1];
+  int choice = getIntInput("Select an task to subscribe to (1-" +
+                               std::to_string(tasks.size()) + "): ",
+                           1, tasks.size());
+  auto task = tasks[choice - 1];
 
-  // We'll use a simple ObservableAssignment for this demo
-  std::shared_ptr<ObservableAssignment> observableAssignment = 
-      std::make_shared<ObservableAssignment>();
-  
-  std::cout << "Creating an observable wrapper for this assignment..." << std::endl;
-  // Here we would create an adapter or wrapper to make the assignment observable
-  // For this demo, we'll just use a new mock ObservableAssignment
-  
+  // We'll use a simple ObservableTask for this demo
+  std::shared_ptr<ObservableTask> observableTask =
+      std::make_shared<ObservableTask>();
+
+  std::cout << "Creating an observable wrapper for this task..." << std::endl;
+  // Here we would create an adapter or wrapper to make the task observable
+  // For this demo, we'll just use a new mock ObservableTask
+
   std::cout << "Select observer type:\n";
-  std::cout << "1. Student Observer (general updates)\n";
-  std::cout << "2. Deadline Observer (deadline warnings)\n";
-  std::cout << "3. Grade Observer (grade updates)\n";
-  std::cout << "4. Progress Observer (progress updates)\n";
-  
+  std::cout << "1. Deadline Observer (deadline warnings)\n";
+  std::cout << "2. Grade Observer (grade updates)\n";
+  std::cout << "3. Progress Observer (progress updates)\n";
+
   int observerType = getIntInput("Enter observer type (1-4): ", 1, 4);
 
   std::shared_ptr<Observer> observer;
 
   switch (observerType) {
   case 1:
-    observer = studentObserver;
-    break;
-  case 2:
     if (!deadlineObserver) {
       int days = getIntInput("Days before deadline to notify: ", 1, 14);
       deadlineObserver = std::make_shared<DeadlineObserver>(days);
     }
     observer = deadlineObserver;
     break;
-  case 3:
+  case 2:
     observer = std::make_shared<GradeObserver>();
     break;
-  case 4:
+  case 3:
     observer = std::make_shared<ProgressObserver>();
     break;
   default:
-    observer = studentObserver;
+    observer = deadlineObserver;
   }
 
   // Attach the observer
-  observableAssignment->attach(observer);
+  observableTask->attach(observer);
 
   std::cout << "Observer attached successfully. You will now receive "
-               "notifications for this assignment."
+               "notifications for this task."
             << std::endl;
 
   // Trigger a test notification
   std::cout << "\nSending test notification..." << std::endl;
-  // Use the assignment state name for the notification
-  observableAssignment->stateChanged(assignment ? assignment->getStateName() : "Unknown");
+  // Use the task state name for the notification
+  observableTask->stateChanged(task ? task->getStateName() : "Unknown");
 }
 
 // Function prototypes
-void markAssignmentAsCompleted();
-void decorateAssignment();
-void createCompositeAssignment();
-void submitAssignmentToGradingSystem();
+void markTaskAsCompleted();
+void decorateTask();
+void createCompositeTask();
+void submitTaskToGradingSystem();
 void switchGradingSystem();
 void saveApplicationState();
 void restoreApplicationState();
-void updateAssignmentState();
-void processAssignmentWithTemplate();
-void subscribeToAssignment();
+void updateTaskState();
+void processTaskWithTemplate();
+void subscribeToTask();
 
 // Main menu function
 void showMainMenu() {
   std::cout << "\n===== Academic Progress Tracker =====\n";
-  std::cout << "1. Create a new course\n";
-  std::cout << "2. Create a new assignment\n";
-  std::cout << "3. View courses\n";
-  std::cout << "4. View assignments\n";
-  std::cout << "5. View assignment details\n";
+  std::cout << "1. Create a new subject\n";
+  std::cout << "2. Create a new task\n";
+  std::cout << "3. View subjects\n";
+  std::cout << "4. View tasks\n";
+  std::cout << "5. View task details\n";
   std::cout << "6. Check notifications\n";
   std::cout << "7. View all notifications\n";
-  std::cout << "8. Mark assignment as completed\n";
-  std::cout << "9. Decorate assignment (Add priority/tags/color)\n";
-  std::cout << "10. Create composite assignment\n";
-  std::cout << "11. Submit assignment to grading system\n";
-  std::cout << "12. Switch grading system\n";
-  std::cout << "13. Save application state\n";
-  std::cout << "14. Restore application state\n";
-  std::cout << "15. Update assignment state\n";
-  std::cout << "16. Process assignment with template method\n";
-  std::cout << "17. Subscribe to assignment updates\n";
+  std::cout << "8. Mark task as completed\n";
+  // std::cout << "9. Decorate task (Add priority/tags/color)\n";
+  // std::cout << "10. Create composite task\n";
+  // std::cout << "11. Submit task to grading system\n";
+  // std::cout << "12. Switch grading system\n";
+  // std::cout << "13. Save application state\n";
+  // std::cout << "14. Restore application state\n";
+  // std::cout << "15. Update task state\n";
+  // std::cout << "16. Process task with template method\n";
+  // std::cout << "17. Subscribe to task updates\n";
   std::cout << "0. Exit\n";
   std::cout << "=================================\n";
 }
 
 int main() {
-  std::cout << "Welcome to the Academic Progress Tracker!\n";
-
-  // Initialize the application
   initializeApplication();
 
   bool running = true;
@@ -816,19 +792,19 @@ int main() {
       running = false;
       break;
     case 1:
-      createCourse();
+      createSubject();
       break;
     case 2:
-      createAssignment();
+      createTask();
       break;
     case 3:
-      listCourses();
+      listSubjects();
       break;
     case 4:
-      listAssignments();
+      listTasks();
       break;
     case 5:
-      viewAssignmentDetails();
+      viewTaskDetails();
       break;
     case 6:
       checkNotifications();
@@ -837,16 +813,16 @@ int main() {
       viewAllNotifications();
       break;
     case 8:
-      markAssignmentAsCompleted();
+      markTaskAsCompleted();
       break;
     case 9:
-      decorateAssignment();
+      decorateTask();
       break;
     case 10:
-      createCompositeAssignment();
+      createCompositeTask();
       break;
     case 11:
-      submitAssignmentToGradingSystem();
+      submitTaskToGradingSystem();
       break;
     case 12:
       switchGradingSystem();
@@ -858,13 +834,13 @@ int main() {
       restoreApplicationState();
       break;
     case 15:
-      updateAssignmentState();
+      updateTaskState();
       break;
     case 16:
-      processAssignmentWithTemplate();
+      processTaskWithTemplate();
       break;
     case 17:
-      subscribeToAssignment();
+      subscribeToTask();
       break;
     default:
       std::cout << "Invalid choice. Please try again.\n";
@@ -875,88 +851,86 @@ int main() {
   return 0;
 }
 
-// Function to mark an assignment as completed
-void markAssignmentAsCompleted() {
-  std::cout << "\n===== Mark Assignment as Completed =====\n";
+// Function to mark an task as completed
+void markTaskAsCompleted() {
+  std::cout << "\n===== Mark Task as Completed =====\n";
 
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
-  auto assignments = course->getAssignments();
+  auto tasks = subject->getTasks();
 
-  if (assignments.empty()) {
-    std::cout << "No assignments for this course.\n";
+  if (tasks.empty()) {
+    std::cout << "No tasks for this subject.\n";
     return;
   }
 
-  std::cout << "Assignments for " << course->getName() << ":\n";
-  for (size_t i = 0; i < assignments.size(); ++i) {
-    auto &assignment = assignments[i];
+  std::cout << "Tasks for " << subject->getName() << ":\n";
+  for (size_t i = 0; i < tasks.size(); ++i) {
+    auto &task = tasks[i];
 
-    auto time = std::chrono::system_clock::to_time_t(assignment->getDeadline());
+    auto time = std::chrono::system_clock::to_time_t(task->getDeadline());
     std::stringstream ss;
     ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M");
 
-    std::cout << i + 1 << ". " << assignment->getTitle() << " ("
-              << assignment->getType() << ")"
-              << " - Due: " << ss.str()
-              << (assignment->isCompleted() ? " - Completed"
-                                            : " - Not completed")
+    std::cout << i + 1 << ". " << task->getTitle() << " (" << task->getType()
+              << ")" << " - Due: " << ss.str()
+              << (task->isCompleted() ? " - Completed" : " - Not completed")
               << "\n";
   }
 
-  int choice = getIntInput("Select an assignment (1-" +
-                               std::to_string(assignments.size()) + "): ",
-                           1, assignments.size());
-  auto assignment = assignments[choice - 1];
+  int choice = getIntInput(
+      "Select an task (1-" + std::to_string(tasks.size()) + "): ", 1,
+      tasks.size());
+  auto task = tasks[choice - 1];
 
   bool isCompleted =
       getIntInput("Mark as completed? (1: Yes, 0: No): ", 0, 1) == 1;
 
   if (isCompleted) {
     int marks = getIntInput("Enter marks received (0-100): ", 0, 100);
-    assignment->setCompleted(true);
-    assignment->setMarks(marks);
-    std::cout << "Assignment marked as completed with " << marks << " marks.\n";
+    task->setCompleted(true);
+    task->setMarks(marks);
+    std::cout << "Task marked as completed with " << marks << " marks.\n";
 
     // Show grade representation from the grading system
     std::string grade = gradingSystemFacade->getGradeRepresentation(marks);
     std::cout << "Grade in " << gradingSystemFacade->getActiveSystemName()
               << ": " << grade << "\n";
   } else {
-    assignment->setCompleted(false);
-    assignment->setMarks(0);
-    std::cout << "Assignment marked as not completed.\n";
+    task->setCompleted(false);
+    task->setMarks(0);
+    std::cout << "Task marked as not completed.\n";
   }
 }
 
-// Function to decorate an assignment with priority, tags, or color
-void decorateAssignment() {
-  std::cout << "\n===== Decorate Assignment =====\n";
+// Function to decorate an task with priority, tags, or color
+void decorateTask() {
+  std::cout << "\n===== Decorate Task =====\n";
 
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
-  auto assignments = course->getAssignments();
+  auto tasks = subject->getTasks();
 
-  if (assignments.empty()) {
-    std::cout << "No assignments for this course.\n";
+  if (tasks.empty()) {
+    std::cout << "No tasks for this subject.\n";
     return;
   }
 
-  std::cout << "Assignments for " << course->getName() << ":\n";
-  for (size_t i = 0; i < assignments.size(); ++i) {
-    auto &assignment = assignments[i];
-    std::cout << i + 1 << ". " << assignment->getTitle() << " ("
-              << assignment->getType() << ")\n";
+  std::cout << "Tasks for " << subject->getName() << ":\n";
+  for (size_t i = 0; i < tasks.size(); ++i) {
+    auto &task = tasks[i];
+    std::cout << i + 1 << ". " << task->getTitle() << " (" << task->getType()
+              << ")\n";
   }
 
-  int choice = getIntInput("Select an assignment to decorate (1-" +
-                               std::to_string(assignments.size()) + "): ",
-                           1, assignments.size());
-  auto baseAssignment = assignments[choice - 1];
+  int choice = getIntInput("Select an task to decorate (1-" +
+                               std::to_string(tasks.size()) + "): ",
+                           1, tasks.size());
+  auto baseTask = tasks[choice - 1];
 
   std::cout << "Select decoration type:\n";
   std::cout << "1. Add priority level\n";
@@ -964,16 +938,15 @@ void decorateAssignment() {
   std::cout << "3. Add color coding\n";
   int decorationType = getIntInput("Enter decoration type (1-3): ", 1, 3);
 
-  std::shared_ptr<Assignment> decoratedAssignment;
+  std::shared_ptr<Task> decoratedTask;
 
   switch (decorationType) {
   case 1: {
     int priorityLevel =
         getIntInput("Enter priority level (1-5, with 5 being highest): ", 1, 5);
-    decoratedAssignment = std::make_shared<PriorityAssignmentDecorator>(
-        baseAssignment, priorityLevel);
-    std::cout << "Priority level " << priorityLevel
-              << " added to assignment.\n";
+    decoratedTask =
+        std::make_shared<PriorityTaskDecorator>(baseTask, priorityLevel);
+    std::cout << "Priority level " << priorityLevel << " added to task.\n";
     break;
   }
   case 2: {
@@ -988,9 +961,8 @@ void decorateAssignment() {
       }
     }
 
-    decoratedAssignment =
-        std::make_shared<TaggedAssignmentDecorator>(baseAssignment, tags);
-    std::cout << tags.size() << " tags added to assignment.\n";
+    decoratedTask = std::make_shared<TaggedTaskDecorator>(baseTask, tags);
+    std::cout << tags.size() << " tags added to task.\n";
     break;
   }
   case 3: {
@@ -1002,73 +974,72 @@ void decorateAssignment() {
     std::cout << "5. Purple (Special)\n";
 
     int colorChoice = getIntInput("Select a color (1-5): ", 1, 5);
-    ColoredAssignmentDecorator::Color color;
+    ColoredTaskDecorator::Color color;
 
     switch (colorChoice) {
     case 1:
-      color = ColoredAssignmentDecorator::Color::RED;
+      color = ColoredTaskDecorator::Color::RED;
       break;
     case 2:
-      color = ColoredAssignmentDecorator::Color::YELLOW;
+      color = ColoredTaskDecorator::Color::YELLOW;
       break;
     case 3:
-      color = ColoredAssignmentDecorator::Color::GREEN;
+      color = ColoredTaskDecorator::Color::GREEN;
       break;
     case 4:
-      color = ColoredAssignmentDecorator::Color::BLUE;
+      color = ColoredTaskDecorator::Color::BLUE;
       break;
     case 5:
-      color = ColoredAssignmentDecorator::Color::PURPLE;
+      color = ColoredTaskDecorator::Color::PURPLE;
       break;
     default:
-      color = ColoredAssignmentDecorator::Color::DEFAULT;
+      color = ColoredTaskDecorator::Color::DEFAULT;
     }
 
-    decoratedAssignment =
-        std::make_shared<ColoredAssignmentDecorator>(baseAssignment, color);
-    std::cout << "Color added to assignment.\n";
+    decoratedTask = std::make_shared<ColoredTaskDecorator>(baseTask, color);
+    std::cout << "Color added to task.\n";
     break;
   }
   }
 
-  if (decoratedAssignment) {
-    // Replace the assignment in the course with the decorated version
-    course->removeAssignment(baseAssignment->getTitle());
-    course->addAssignment(decoratedAssignment);
+  if (decoratedTask) {
+    // Replace the task in the subject with the decorated version
+    subject->removeTask(baseTask->getTitle());
+    subject->addTask(decoratedTask);
 
-    std::cout << "Assignment successfully decorated!\n";
-    decoratedAssignment->displayInfo();
+    std::cout << "Task successfully decorated!\n";
+    decoratedTask->displayInfo();
   }
 }
 
-// Function to create a composite assignment (with sub-assignments)
-void createCompositeAssignment() {
-  std::cout << "\n===== Create Composite Assignment =====\n";
+// Function to create a composite task (with sub-tasks)
+void createCompositeTask() {
+  std::cout << "\n===== Create Composite Task =====\n";
 
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
-  std::string title = getStringInput("Enter composite assignment title: ");
+  std::string title = getStringInput("Enter composite task title: ");
   if (title.empty()) {
-    std::cout << "Assignment title cannot be empty.\n";
+    std::cout << "Task title cannot be empty.\n";
     return;
   }
 
   std::string description =
-      getStringInput("Enter composite assignment description (optional): ");
-  DateTime deadline = getDateTimeInput("Enter composite assignment deadline");
+      getStringInput("Enter composite task description (optional): ");
+  DateTime deadline = getDateTimeInput("Enter composite task deadline");
 
-  // Create the composite assignment
-  auto compositeAssignment =
-      std::make_shared<CompositeAssignment>(title, deadline, description);
+  // Create the composite task
+  auto compositeTask =
+      std::make_shared<CompositeTask>(title, deadline, description);
 
-  // Add child assignments
+  // Add child tasks
   bool addingChildren = true;
   while (addingChildren) {
-    std::cout << "\nAdd child assignment to " << title << ":\n";
-    std::cout << "1. Create new child assignment\n";
-    std::cout << "2. Done adding child assignments\n";
+    std::cout << "\nAdd child task to " << title << ":\n";
+    std::cout << "1. Create new child task\n";
+    std::cout << "2. Done adding child tasks\n";
 
     int choice = getIntInput("Enter your choice (1-2): ", 1, 2);
 
@@ -1077,114 +1048,112 @@ void createCompositeAssignment() {
       continue;
     }
 
-    // Create a child assignment
-    std::string childTitle = getStringInput("Enter child assignment title: ");
+    // Create a child task
+    std::string childTitle = getStringInput("Enter child task title: ");
     if (childTitle.empty()) {
-      std::cout << "Assignment title cannot be empty. Skipping this child.\n";
+      std::cout << "Task title cannot be empty. Skipping this child.\n";
       continue;
     }
 
     std::string childDescription =
-        getStringInput("Enter child assignment description (optional): ");
+        getStringInput("Enter child task description (optional): ");
 
-    // For simplicity, child assignments inherit parent's deadline
+    // For simplicity, child tasks inherit parent's deadline
     // But you could also get a separate deadline if needed
 
-    // Show assignment type options
-    std::cout << "Select child assignment type:\n";
-    std::cout << "1. Homework\n";
+    // Show task type options
+    std::cout << "Select child task type:\n";
+    std::cout << "1. Lab\n";
     std::cout << "2. Project\n";
     std::cout << "3. Exam\n";
     int typeChoice = getIntInput("Enter your choice (1-3): ", 1, 3);
 
-    std::shared_ptr<Assignment> childAssignment;
+    std::shared_ptr<Task> childTask;
 
     switch (typeChoice) {
     case 1:
-      childAssignment = std::make_shared<HomeworkAssignment>(
-          childTitle, deadline, childDescription);
+      childTask =
+          std::make_shared<LabTask>(childTitle, deadline, childDescription);
       break;
     case 2:
-      childAssignment = std::make_shared<ProjectAssignment>(
-          childTitle, deadline, childDescription);
+      childTask =
+          std::make_shared<ProjectTask>(childTitle, deadline, childDescription);
       break;
     case 3:
-      childAssignment = std::make_shared<ExamAssignment>(childTitle, deadline,
-                                                         childDescription);
+      childTask =
+          std::make_shared<ExamTask>(childTitle, deadline, childDescription);
       break;
     }
 
     // Add the child to the composite
-    compositeAssignment->addChildAssignment(childAssignment);
-    std::cout << "Child assignment added: " << childTitle << "\n";
+    compositeTask->addChildTask(childTask);
+    std::cout << "Child task added: " << childTitle << "\n";
   }
 
-  // Add the composite assignment to the course
-  course->addAssignment(compositeAssignment);
+  // Add the composite task to the subject
+  subject->addTask(compositeTask);
 
-  std::cout << "Composite assignment created with "
-            << compositeAssignment->getChildAssignments().size()
-            << " child assignments.\n";
+  std::cout << "Composite task created with "
+            << compositeTask->getChildTasks().size() << " child tasks.\n";
 }
 
-// Function to submit an assignment to the grading system
-void submitAssignmentToGradingSystem() {
-  std::cout << "\n===== Submit Assignment to Grading System =====\n";
+// Function to submit an task to the grading system
+void submitTaskToGradingSystem() {
+  std::cout << "\n===== Submit Task to Grading System =====\n";
   std::cout << "Using grading system: "
             << gradingSystemFacade->getActiveSystemName() << "\n";
 
-  auto course = selectCourse();
-  if (!course)
+  auto subject = selectSubject();
+  if (!subject)
     return;
 
-  auto assignments = course->getAssignments();
+  auto tasks = subject->getTasks();
 
-  if (assignments.empty()) {
-    std::cout << "No assignments for this course.\n";
+  if (tasks.empty()) {
+    std::cout << "No tasks for this subject.\n";
     return;
   }
 
-  std::cout << "Assignments for " << course->getName() << ":\n";
-  for (size_t i = 0; i < assignments.size(); ++i) {
-    auto &assignment = assignments[i];
+  std::cout << "Tasks for " << subject->getName() << ":\n";
+  for (size_t i = 0; i < tasks.size(); ++i) {
+    auto &task = tasks[i];
 
-    auto time = std::chrono::system_clock::to_time_t(assignment->getDeadline());
+    auto time = std::chrono::system_clock::to_time_t(task->getDeadline());
     std::stringstream ss;
     ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M");
 
-    std::cout << i + 1 << ". " << assignment->getTitle() << " ("
-              << assignment->getType() << ")"
-              << " - Due: " << ss.str() << "\n";
+    std::cout << i + 1 << ". " << task->getTitle() << " (" << task->getType()
+              << ")" << " - Due: " << ss.str() << "\n";
   }
 
-  int choice = getIntInput("Select an assignment to submit (1-" +
-                               std::to_string(assignments.size()) + "): ",
-                           1, assignments.size());
-  auto assignment = assignments[choice - 1];
+  int choice = getIntInput(
+      "Select an task to submit (1-" + std::to_string(tasks.size()) + "): ", 1,
+      tasks.size());
+  auto task = tasks[choice - 1];
 
   std::string submissionContent =
       getStringInput("Enter submission content (e.g., file path or text): ");
 
   try {
-    // Submit the assignment using the facade
-    gradingSystemFacade->submitAssignment(assignment, submissionContent);
+    // Submit the task using the facade
+    gradingSystemFacade->submitTask(task, submissionContent);
 
-    // Check if the submission was successful and update the assignment status
-    if (gradingSystemFacade->isCompleted(assignment)) {
-      int score = gradingSystemFacade->getScore(assignment);
-      assignment->setCompleted(true);
-      assignment->setMarks(score);
+    // Check if the submission was successful and update the task status
+    if (gradingSystemFacade->isCompleted(task)) {
+      int score = gradingSystemFacade->getScore(task);
+      task->setCompleted(true);
+      task->setMarks(score);
 
       std::string grade = gradingSystemFacade->getGradeRepresentation(score);
 
-      std::cout << "Assignment submitted and graded automatically.\n";
+      std::cout << "Task submitted and graded automatically.\n";
       std::cout << "Score: " << score << " out of 100\n";
       std::cout << "Grade: " << grade << "\n";
     } else {
-      std::cout << "Assignment submitted but not yet graded.\n";
+      std::cout << "Task submitted but not yet graded.\n";
     }
   } catch (const std::exception &e) {
-    std::cout << "Error submitting assignment: " << e.what() << "\n";
+    std::cout << "Error submitting task: " << e.what() << "\n";
   }
 }
 

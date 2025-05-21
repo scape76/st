@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/unit_tests.dir/tests/builder_tests.cpp.o CMakeFiles/unit_tests.dir/tests/factory_method_tests.cpp.o CMakeFiles/unit_tests.dir/tests/integration_tests.cpp.o CMakeFiles/unit_tests.dir/tests/singleton_tests.cpp.o -o unit_tests  libacademic_core.a lib/libgtest.a lib/libgtest_main.a -lpthread lib/libgtest.a 

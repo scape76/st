@@ -8,29 +8,34 @@ This project implements several Gang of Four (GoF) design patterns:
 
 ### Creational Patterns
 
-1. **Singleton Pattern**: 
+1. **Singleton Pattern**:
+
    - `NotificationManager` is implemented as a singleton to ensure a single point of control for all notifications in the system.
 
-2. **Factory Method Pattern**: 
-   - `AssignmentFactory` and its concrete implementations (`HomeworkFactory`, `ProjectFactory`, `ExamFactory`) provide a way to create different types of assignments without exposing creation logic.
+2. **Factory Method Pattern**:
 
-3. **Builder Pattern**: 
+   - `AssignmentFactory` and its concrete implementations (`LabFactory`, `ProjectFactory`, `ExamFactory`) provide a way to create different types of assignments without exposing creation logic.
+
+3. **Builder Pattern**:
    - `CourseBuilder` and `AssignmentBuilder` provide a fluent interface for step-by-step creation of complex objects.
 
 ### Structural Patterns
 
 4. **Decorator Pattern**:
+
    - `AssignmentDecorator` serves as a base decorator that adds functionality to assignments.
    - `PriorityAssignmentDecorator` adds priority levels to assignments.
    - `TaggedAssignmentDecorator` adds custom tags to assignments.
    - `ColoredAssignmentDecorator` adds color-coding to assignments.
 
 5. **Composite Pattern**:
+
    - `CompositeAssignment` allows assignments to be composed of multiple sub-assignments.
    - Enables creating complex assignment structures with parent-child relationships.
    - Supports operations that can be performed uniformly across the entire assignment hierarchy.
 
 6. **Adapter Pattern**:
+
    - `UniversityGradingSystemAdapter` adapts the external university grading system to our application's interface.
    - `OnlinePlatformGradingSystemAdapter` adapts a different external learning platform system to the same interface.
    - Allows the application to work with multiple external systems through a consistent interface.
@@ -43,6 +48,7 @@ This project implements several Gang of Four (GoF) design patterns:
 ### Behavioral Patterns
 
 8. **State Pattern**:
+
    - `AssignmentState` hierarchy manages how assignments behave based on their current state.
    - States include `NotStartedState`, `InProgressState`, `CompletedState`, and `OverdueState`.
    - Each state encapsulates state-specific behavior and handles transitions.
@@ -52,6 +58,7 @@ This project implements several Gang of Four (GoF) design patterns:
    - States manage their own transitions, keeping transition logic out of Assignment class.
 
 9. **Observer Pattern**:
+
    - Implements a publish-subscribe mechanism for notifications.
    - `Observer` interface with concrete observers like `StudentObserver`, `DeadlineObserver`, `GradeObserver`, and `ProgressObserver`.
    - `Subject` interface allows objects to attach, detach, and notify observers.
@@ -61,8 +68,9 @@ This project implements several Gang of Four (GoF) design patterns:
    - Observers receive contextual information with each notification and respond accordingly.
 
 10. **Template Method Pattern**:
+
     - `AssignmentProcess` defines a skeleton algorithm for assignment submission and evaluation.
-    - `HomeworkProcess`, `ProjectProcess`, and `ExamProcess` implement specific steps differently.
+    - `LabProcess`, `ProjectProcess`, and `ExamProcess` implement specific steps differently.
     - Standardizes the overall workflow while allowing variation in individual steps.
     - Uses hook methods for optional customization of the process.
     - Template method `processAssignment()` orchestrates the algorithm steps: validate → check prerequisites → process submission → evaluate → provide feedback → update records.
@@ -82,7 +90,7 @@ This project implements several Gang of Four (GoF) design patterns:
 ## Features
 
 - Create and manage courses
-- Create and track assignments of different types (homework, project, exam)
+- Create and track assignments of different types (lab, project, exam)
 - Set deadlines for assignments
 - Configure notifications for upcoming deadlines
 - View detailed information about courses and assignments
@@ -105,16 +113,19 @@ The system includes a complete API layer that enables frontend integration using
 ### API Components
 
 1. **APIFacade**: Unified entry point to all system functionality (Facade Pattern)
+
    - Encapsulates the backend complexity behind a simple interface
    - Aggregates related operations into a cohesive API surface
    - Manages conversion between internal models and external DTOs
 
 2. **Command Layer**: Request handling system (Command Pattern)
+
    - Each API endpoint corresponds to a specific Command object
    - `CommandDispatcher` routes requests to appropriate command handlers
    - Commands encapsulate operations and ensure separation of concerns
 
 3. **Data Transfer Objects**: Standardized data exchange (Adapter Pattern)
+
    - DTOs provide a clean contract between frontend and backend
    - Adapters convert between internal models and external representations
    - Ensures proper encapsulation of backend implementation details
@@ -142,6 +153,7 @@ The API exposes comprehensive endpoints for all system features:
 ### Real-time Updates
 
 The API supports real-time updates using the Observer pattern:
+
 - WebSocket connections for live notification delivery
 - Event-based architecture for state changes
 - Support for subscription to specific entities and event types
@@ -184,7 +196,7 @@ Follow the interactive menu to:
 
 - **Course**: Represents an academic course with a name, code, and description
 - **Assignment**: Base class for all assignments with title, description, and deadline
-  - Types: HomeworkAssignment, ProjectAssignment, ExamAssignment
+  - Types: LabAssignment, ProjectAssignment, ExamAssignment
 - **Notification**: Represents reminders for upcoming deadlines
 
 ## Future Enhancements
