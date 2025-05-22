@@ -5,17 +5,14 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
 
-// Forward declarations
 class Task;
 class Subject;
 
-// Memento for Task state
 class TaskMemento {
 private:
   friend class Task;
@@ -28,10 +25,9 @@ private:
   int marks;
   float progress;
   std::string state;
-  std::string subjectCode; // Reference to parent subject
+  std::string subjectCode;
 
 public:
-  // Constructor made public for std::make_shared
   TaskMemento(const std::string &title, const std::string &description,
               const std::chrono::system_clock::time_point &deadline,
               bool completed, int marks, float progress,
@@ -40,7 +36,6 @@ public:
         completed(completed), marks(marks), progress(progress), state(state),
         subjectCode(subjectCode) {}
 
-  // Getters for accessing private members from outside
   std::string getTitle() const { return title; }
   std::string getDescription() const { return description; }
   std::chrono::system_clock::time_point getDeadline() const { return deadline; }
@@ -51,7 +46,6 @@ public:
   std::string getSubjectCode() const { return subjectCode; }
 };
 
-// Memento for Subject state
 class SubjectMemento {
 private:
   friend class Subject;
@@ -60,24 +54,21 @@ private:
   std::string name;
   std::string code;
   std::string description;
-  std::vector<std::string> taskTitles; // References to tasks
+  std::vector<std::string> taskTitles;
 
 public:
-  // Constructor made public for std::make_shared
   SubjectMemento(const std::string &name, const std::string &code,
                  const std::string &description,
                  const std::vector<std::string> &taskTitles)
       : name(name), code(code), description(description),
         taskTitles(taskTitles) {}
 
-  // Getters for accessing private members
   std::string getName() const { return name; }
   std::string getCode() const { return code; }
   std::string getDescription() const { return description; }
   const std::vector<std::string> &getTaskTitles() const { return taskTitles; }
 };
 
-// AcademicProgressMemento stores the entire application state
 class AcademicProgressMemento {
 private:
   std::vector<std::shared_ptr<SubjectMemento>> subjects;
@@ -88,7 +79,6 @@ private:
 public:
   AcademicProgressMemento(const std::string &description = "")
       : description(description) {
-    // Set timestamp to current time
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
@@ -117,7 +107,6 @@ public:
   std::string getDescription() const { return description; }
 };
 
-// Caretaker class to manage mementos
 class MementoCaretaker {
 private:
   std::vector<std::shared_ptr<AcademicProgressMemento>> savedStates;
@@ -161,7 +150,6 @@ public:
         file << memento->getTimestamp() << std::endl;
         file << memento->getDescription() << std::endl;
 
-        // Save subjects
         const auto &subjects = memento->getSubjects();
         file << subjects.size() << std::endl;
         for (const auto &subject : subjects) {
@@ -169,21 +157,18 @@ public:
           file << subject->getCode() << std::endl;
           file << subject->getDescription() << std::endl;
 
-          // Save task references
           file << subject->getTaskTitles().size() << std::endl;
           for (const auto &title : subject->getTaskTitles()) {
             file << title << std::endl;
           }
         }
 
-        // Save tasks
         const auto &tasks = memento->getTasks();
         file << tasks.size() << std::endl;
         for (const auto &task : tasks) {
           file << task->getTitle() << std::endl;
           file << task->getDescription() << std::endl;
 
-          // Save deadline timestamp
           auto time = std::chrono::system_clock::to_time_t(task->getDeadline());
           file << time << std::endl;
 
@@ -218,7 +203,7 @@ public:
 
       size_t mementoCount;
       file >> mementoCount;
-      file.ignore(); // Consume newline
+      file.ignore();
 
       savedStates.clear();
 
@@ -229,10 +214,9 @@ public:
 
         auto memento = std::make_shared<AcademicProgressMemento>(description);
 
-        // Load subjects
         size_t subjectCount;
         file >> subjectCount;
-        file.ignore(); // Consume newline
+        file.ignore();
 
         for (size_t j = 0; j < subjectCount; ++j) {
           std::string name, code, subjectDescription;
@@ -243,7 +227,7 @@ public:
           std::vector<std::string> taskTitles;
           size_t titleCount;
           file >> titleCount;
-          file.ignore(); // Consume newline
+          file.ignore();
 
           for (size_t k = 0; k < titleCount; ++k) {
             std::string title;
@@ -256,20 +240,18 @@ public:
           memento->addSubjectMemento(subjectMemento);
         }
 
-        // Load tasks
         size_t taskCount;
         file >> taskCount;
-        file.ignore(); // Consume newline
+        file.ignore();
 
         for (size_t j = 0; j < taskCount; ++j) {
           std::string title, description, state, subjectCode;
           std::getline(file, title);
           std::getline(file, description);
 
-          // Load deadline timestamp
           std::time_t timestamp;
           file >> timestamp;
-          file.ignore(); // Consume newline
+          file.ignore();
           auto deadline = std::chrono::system_clock::from_time_t(timestamp);
 
           bool completed;
@@ -279,7 +261,7 @@ public:
           file >> completed;
           file >> marks;
           file >> progress;
-          file.ignore(); // Consume newline
+          file.ignore();
 
           std::getline(file, state);
           std::getline(file, subjectCode);
@@ -304,4 +286,4 @@ public:
   void clearMementos() { savedStates.clear(); }
 };
 
-#endif // MEMENTO_H
+#endif

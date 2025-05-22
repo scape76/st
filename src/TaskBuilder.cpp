@@ -1,10 +1,8 @@
 #include "../include/TaskBuilder.h"
 #include <stdexcept>
 
-// Constructor
 TaskBuilder::TaskBuilder() { reset(); }
 
-// Fluent interface methods
 TaskBuilder &TaskBuilder::setTitle(const std::string &title) {
   this->title = title;
   return *this;
@@ -20,7 +18,6 @@ TaskBuilder &TaskBuilder::setDeadline(const DateTime &deadline) {
   return *this;
 }
 
-// Set which type of task to build
 TaskBuilder &TaskBuilder::asLab() {
   factory = std::make_shared<LabFactory>();
   return *this;
@@ -36,9 +33,7 @@ TaskBuilder &TaskBuilder::asExam() {
   return *this;
 }
 
-// Build the task
 std::shared_ptr<Task> TaskBuilder::build() const {
-  // Validate required fields
   if (title.empty()) {
     throw std::invalid_argument("Task title is required");
   }
@@ -48,11 +43,9 @@ std::shared_ptr<Task> TaskBuilder::build() const {
         "Task type (lab/project/exam) must be specified");
   }
 
-  // Create the task using the factory
   return factory->createTask(title, deadline, description);
 }
 
-// Reset the builder to create another task
 void TaskBuilder::reset() {
   title.clear();
   description.clear();

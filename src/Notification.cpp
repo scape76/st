@@ -7,7 +7,6 @@
 #include <iostream>
 #include <sstream>
 
-// Helper function to format DateTime
 std::string formatDateTimeNotif(const DateTime &dt) {
   auto time = std::chrono::system_clock::to_time_t(dt);
   std::tm tm_local = {};
@@ -18,18 +17,15 @@ std::string formatDateTimeNotif(const DateTime &dt) {
   tm_local = *std::localtime(&time);
 #endif
 
-  // Use local time to preserve user input
   std::stringstream ss;
   ss << std::put_time(&tm_local, "%Y-%m-%d %H:%M");
   return ss.str();
 }
 
-// Initialize static members of NotificationManager
 std::unique_ptr<NotificationManager, std::function<void(NotificationManager *)>>
     NotificationManager::instance{nullptr, [](NotificationManager *p) {}};
 std::mutex NotificationManager::mutex;
 
-// Base Notification implementation
 Notification::Notification(const std::string &message,
                            const DateTime &triggerTime,
                            std::shared_ptr<Task> task)
@@ -40,7 +36,7 @@ std::string Notification::getMessage() const { return message; }
 DateTime Notification::getTriggerTime() const { return triggerTime; }
 
 std::shared_ptr<Task> Notification::getTask() const {
-  return task.lock(); // Convert weak_ptr to shared_ptr
+  return task.lock();
 }
 
 void Notification::setMessage(const std::string &message) {
@@ -69,17 +65,15 @@ void Notification::display() const {
             << std::endl;
 }
 
-// DeadlineNotification implementation
 DeadlineNotification::DeadlineNotification(const std::string &message,
                                            std::shared_ptr<Task> task,
                                            int daysBeforeDeadline)
     : Notification(
           message,
-          std::chrono::system_clock::time_point(), // Will be calculated
+          std::chrono::system_clock::time_point(),
           task),
       daysBeforeDeadline(daysBeforeDeadline) {
 
-  // Calculate the trigger time based on the task deadline
   auto deadline = task->getDeadline();
   auto triggerTime = deadline - std::chrono::hours(24 * daysBeforeDeadline);
   setTriggerTime(triggerTime);
@@ -92,7 +86,6 @@ int DeadlineNotification::getDaysBeforeDeadline() const {
 void DeadlineNotification::setDaysBeforeDeadline(int days) {
   daysBeforeDeadline = days;
 
-  // Recalculate trigger time
   auto taskPtr = getTask();
   if (taskPtr) {
     auto deadline = taskPtr->getDeadline();
@@ -104,21 +97,17 @@ void DeadlineNotification::setDaysBeforeDeadline(int days) {
 bool DeadlineNotification::shouldTrigger(const DateTime &currentTime) const {
   auto taskPtr = getTask();
   if (!taskPtr) {
-    return false; // Task no longer exists
+    return false;
   }
 
-  // Get the current time and deadline
   auto deadline = taskPtr->getDeadline();
   auto timeToDeadline =
       std::chrono::duration_cast<std::chrono::hours>(deadline - currentTime)
           .count();
 
-  // Calculate the range for triggering (between daysBeforeDeadline and
-  // daysBeforeDeadline-1)
   auto upperBound = daysBeforeDeadline * 24;
-  auto lowerBound = upperBound - 24; // One day window for notifications
+  auto lowerBound = upperBound - 24;
 
-  // Trigger if we're within the notification window
   return (timeToDeadline <= upperBound && timeToDeadline > lowerBound);
 }
 
@@ -140,7 +129,6 @@ void DeadlineNotification::display() const {
   }
 }
 
-// NotificationManager implementation
 NotificationManager &NotificationManager::getInstance() {
   std::lock_guard<std::mutex> lock(mutex);
   if (instance == nullptr) {
@@ -153,7 +141,6 @@ void NotificationManager::addNotification(
     std::shared_ptr<Notification> notification) {
   notifications.push_back(notification);
 
-  // Also add to the task's notifications list
   if (auto task = notification->getTask()) {
     task->addNotification(notification);
   }
@@ -161,7 +148,6 @@ void NotificationManager::addNotification(
 
 void NotificationManager::removeNotification(size_t index) {
   if (index < notifications.size()) {
-    // Remove the notification from its task too
     if (auto task = notifications[index]->getTask()) {
       auto taskNotifs = task->getNotifications();
       auto it =
@@ -196,7 +182,6 @@ void NotificationManager::checkNotifications() {
     } else {
       std::cout << "No notifications are due at this time." << std::endl;
 
-      // Display when the next notification would be due
       std::cout << "You have " << notifications.size()
                 << " notification(s) scheduled." << std::endl;
 

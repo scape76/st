@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT_H
-#define ASSIGNMENT_H
+#ifndef TASK_H
+#define TASK_H
 
 #include "Memento.h"
 #include "TaskState.h"
@@ -9,16 +9,13 @@
 #include <string>
 #include <vector>
 
-// Forward declaration
 class Subject;
 class Notification;
 class TaskState;
 class TaskMemento;
 
-// Using a type alias for date/time
 using DateTime = std::chrono::system_clock::time_point;
 
-// Task class
 class Task {
 private:
   std::string title;
@@ -37,14 +34,11 @@ private:
   friend class OverdueState;
 
 public:
-  // Constructor
   Task(const std::string &title, const DateTime &deadline,
        const std::string &description = "");
 
-  // Virtual destructor for polymorphism
   virtual ~Task() = default;
 
-  // State pattern methods
   void setState(std::shared_ptr<TaskState> state);
   std::shared_ptr<TaskState> getState() const;
   void startTask();
@@ -53,7 +47,6 @@ public:
   std::string getStateName() const;
   std::string getStateDescription() const;
 
-  // Getters
   virtual std::string getTitle() const;
   virtual std::string getDescription() const;
   virtual DateTime getDeadline() const;
@@ -63,7 +56,6 @@ public:
   virtual int getMarks() const;
   virtual float getProgress() const;
 
-  // Setters
   virtual void setTitle(const std::string &title);
   virtual void setDescription(const std::string &description);
   virtual void setDeadline(const DateTime &deadline);
@@ -72,22 +64,17 @@ public:
   virtual void setMarks(int marks);
   virtual void setProgress(float progress);
 
-  // Notification management
   virtual void addNotification(std::shared_ptr<Notification> notification);
   virtual void removeNotification(size_t index);
 
-  // Display task information
   virtual void displayInfo() const;
 
-  // Task types
   virtual std::string getType() const = 0;
 
-  // Memento pattern methods
   std::shared_ptr<TaskMemento> createMemento() const;
   void restoreFromMemento(const std::shared_ptr<TaskMemento> &memento);
 };
 
-// Concrete Task types
 class LabTask : public Task {
 public:
   LabTask(const std::string &title, const DateTime &deadline,
@@ -112,7 +99,6 @@ public:
   std::string getType() const override { return "Exam"; }
 };
 
-// Task Factory (Factory Method Pattern)
 class TaskFactory {
 public:
   virtual std::shared_ptr<Task>
@@ -122,7 +108,6 @@ public:
   virtual ~TaskFactory() = default;
 };
 
-// Concrete factories
 class LabFactory : public TaskFactory {
 public:
   std::shared_ptr<Task>
@@ -144,4 +129,4 @@ public:
              const std::string &description = "") override;
 };
 
-#endif // ASSIGNMENT_H
+#endif

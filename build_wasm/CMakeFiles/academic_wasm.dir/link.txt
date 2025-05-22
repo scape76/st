@@ -1,0 +1,1 @@
+/home/dan/code/emsdk/upstream/emscripten/em++ -s WASM=1 -s EXPORT_NAME='AcademicTracker' -s MODULARIZE=1 -s EXPORT_ES6=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=1 -s ASSERTIONS=1 --bind CMakeFiles/academic_wasm.dir/src/bindings.cpp.o -o academic_tracker.js  libacademic_core.a 

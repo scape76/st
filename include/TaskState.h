@@ -5,14 +5,12 @@
 #include <memory>
 #include <string>
 
-// Forward declarations
 class Task;
 class NotStartedState;
 class InProgressState;
 class CompletedState;
 class OverdueState;
 
-// Base State class
 class TaskState {
 protected:
   Task *context;
@@ -22,24 +20,19 @@ public:
 
   void setContext(Task *assignment) { this->context = assignment; }
 
-  // State-specific behaviors
   virtual void start() = 0;
   virtual void makeProgress(float percentage) = 0;
   virtual void complete(int marks) = 0;
   virtual void checkDeadline() = 0;
   virtual void handleNotification() = 0;
 
-  // Return the name of the state
   virtual std::string getName() const = 0;
 
-  // Return a description of the state
   virtual std::string getDescription() const = 0;
 
-  // Return color associated with the state
   virtual std::string getColor() const = 0;
 };
 
-// Not Started State
 class NotStartedState : public TaskState {
 public:
   void start() override;
@@ -62,7 +55,6 @@ private:
   static std::shared_ptr<NotStartedState> instance;
 };
 
-// In Progress State
 class InProgressState : public TaskState {
 private:
   float progressPercentage;
@@ -88,7 +80,6 @@ public:
   std::string getColor() const override { return "Blue"; }
 };
 
-// Completed State
 class CompletedState : public TaskState {
 private:
   int achievedMarks;
@@ -113,7 +104,6 @@ public:
   std::string getColor() const override { return "Green"; }
 };
 
-// Overdue State
 class OverdueState : public TaskState {
 private:
   std::chrono::system_clock::time_point overdueDate;
@@ -138,4 +128,4 @@ public:
   std::string getColor() const override { return "Red"; }
 };
 
-#endif // ASSIGNMENT_STATE_H
+#endif

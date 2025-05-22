@@ -2,9 +2,6 @@
 #include "../include/Subject.h"
 #include <stdexcept>
 
-// Concrete implementations of adapters for external grading systems
-
-// University Grading System Adapter
 void UniversityGradingSystemAdapter::submitTask(
     std::shared_ptr<Task> task, const std::string &studentId,
     const std::string &submissionContent) {
@@ -13,7 +10,6 @@ void UniversityGradingSystemAdapter::submitTask(
     throw std::runtime_error("Task or subject not set properly");
   }
 
-  // Adapt to external system interface
   externalSystem->submitTask(studentId, task->getSubject()->getCode(),
                              task->getTitle(), submissionContent);
 }
@@ -25,11 +21,9 @@ int UniversityGradingSystemAdapter::getScore(std::shared_ptr<Task> task,
     return 0;
   }
 
-  // Adapt to external system interface and convert to our scale (0-100)
   double externalScore = externalSystem->retrieveScore(
       studentId, task->getSubject()->getCode(), task->getTitle());
 
-  // Assume external system uses 0-10 scale, convert to 0-100
   return static_cast<int>(externalScore * 10);
 }
 
@@ -40,7 +34,6 @@ bool UniversityGradingSystemAdapter::isCompleted(std::shared_ptr<Task> task,
     return false;
   }
 
-  // Task is completed if score is greater than 0
   double score = externalSystem->retrieveScore(
       studentId, task->getSubject()->getCode(), task->getTitle());
 
@@ -48,14 +41,11 @@ bool UniversityGradingSystemAdapter::isCompleted(std::shared_ptr<Task> task,
 }
 
 std::string UniversityGradingSystemAdapter::getGradeRepresentation(int score) {
-  // Convert score to 0-10 scale for external system
   double externalScore = score / 10.0;
 
-  // Get letter grade from external system
   return externalSystem->getLetterGrade(externalScore);
 }
 
-// Online Platform Grading System Adapter
 void OnlinePlatformGradingSystemAdapter::submitTask(
     std::shared_ptr<Task> task, const std::string &studentId,
     const std::string &submissionContent) {
@@ -64,12 +54,10 @@ void OnlinePlatformGradingSystemAdapter::submitTask(
     throw std::runtime_error("Task or subject not set properly");
   }
 
-  // Adapt to external system interface
-  // Map subject code to moduleId and task title to taskId
   externalSystem->uploadLab(
       studentId,
-      task->getSubject()->getCode(), // Using subject code as moduleId
-      task->getTitle(),              // Using title as taskId
+      task->getSubject()->getCode(),
+      task->getTitle(),
       submissionContent);
 }
 
@@ -80,14 +68,12 @@ int OnlinePlatformGradingSystemAdapter::getScore(std::shared_ptr<Task> task,
     return 0;
   }
 
-  // Adapt to external system interface
   int points = externalSystem->getPoints(
       studentId,
-      task->getSubject()->getCode(), // Using subject code as moduleId
-      task->getTitle()               // Using title as taskId
+      task->getSubject()->getCode(),
+      task->getTitle()
   );
 
-  // Convert to percentage based on max points
   int maxPoints = externalSystem->getMaxPoints(task->getSubject()->getCode(),
                                                task->getTitle());
 
@@ -101,17 +87,15 @@ bool OnlinePlatformGradingSystemAdapter::isCompleted(
     return false;
   }
 
-  // Direct mapping to external system's completion status
   return externalSystem->taskCompleted(
       studentId,
-      task->getSubject()->getCode(), // Using subject code as moduleId
-      task->getTitle()               // Using title as taskId
+      task->getSubject()->getCode(),
+      task->getTitle()
   );
 }
 
 std::string
 OnlinePlatformGradingSystemAdapter::getGradeRepresentation(int score) {
-  // Implement custom grading scale for the online platform
   if (score >= 90)
     return "A";
   if (score >= 80)
@@ -123,7 +107,6 @@ OnlinePlatformGradingSystemAdapter::getGradeRepresentation(int score) {
   return "F";
 }
 
-// GradingSystemFacade implementation
 GradingSystemFacade::GradingSystemFacade(const std::string &studentId)
     : studentId(studentId), activeSystem("") {}
 
@@ -132,7 +115,6 @@ void GradingSystemFacade::registerGradingSystem(
 
   gradingSystems[name] = system;
 
-  // Set as active if it's the first system registered
   if (activeSystem.empty()) {
     activeSystem = name;
   }
@@ -163,7 +145,6 @@ void GradingSystemFacade::submitTask(std::shared_ptr<Task> task,
     throw std::runtime_error("No active grading system set");
   }
 
-  // Use the active grading system
   gradingSystems[activeSystem]->submitTask(task, studentId, submissionContent);
 }
 
@@ -173,7 +154,6 @@ int GradingSystemFacade::getScore(std::shared_ptr<Task> task) {
     return 0;
   }
 
-  // Use the active grading system
   return gradingSystems[activeSystem]->getScore(task, studentId);
 }
 
@@ -183,14 +163,12 @@ bool GradingSystemFacade::isCompleted(std::shared_ptr<Task> task) {
     return false;
   }
 
-  // Use the active grading system
   return gradingSystems[activeSystem]->isCompleted(task, studentId);
 }
 
 std::string GradingSystemFacade::getGradeRepresentation(int score) {
   if (activeSystem.empty() ||
       gradingSystems.find(activeSystem) == gradingSystems.end()) {
-    // Default grade representation
     if (score >= 90)
       return "A";
     if (score >= 80)
@@ -202,7 +180,6 @@ std::string GradingSystemFacade::getGradeRepresentation(int score) {
     return "F";
   }
 
-  // Use the active grading system
   return gradingSystems[activeSystem]->getGradeRepresentation(score);
 }
 

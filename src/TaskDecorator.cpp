@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <iostream>
 
-// Base TaskDecorator implementation
 TaskDecorator::TaskDecorator(std::shared_ptr<Task> assignment)
     : Task("", std::chrono::system_clock::now(), ""), wrappedTask(assignment) {}
 
@@ -66,11 +65,9 @@ void TaskDecorator::displayInfo() const { wrappedTask->displayInfo(); }
 
 std::string TaskDecorator::getType() const { return wrappedTask->getType(); }
 
-// PriorityTaskDecorator implementation
 PriorityTaskDecorator::PriorityTaskDecorator(std::shared_ptr<Task> assignment,
                                              int priorityLevel)
     : TaskDecorator(assignment), priorityLevel(priorityLevel) {
-  // Ensure priority level is within valid range
   if (priorityLevel < 1)
     this->priorityLevel = 1;
   if (priorityLevel > 5)
@@ -113,17 +110,15 @@ void PriorityTaskDecorator::displayInfo() const {
   std::cout << " (" << priorityLevel << ")" << std::endl;
 }
 
-// TaggedTaskDecorator implementation
 TaggedTaskDecorator::TaggedTaskDecorator(
     std::shared_ptr<Task> assignment,
     const std::vector<std::string> &initialTags)
     : TaskDecorator(assignment), tags(initialTags) {}
 
 void TaggedTaskDecorator::addTag(const std::string &tag) {
-  // Check if tag already exists
   for (const auto &existingTag : tags) {
     if (existingTag == tag) {
-      return; // Tag already exists
+      return;
     }
   }
 
@@ -155,7 +150,6 @@ void TaggedTaskDecorator::displayInfo() const {
   }
 }
 
-// ColoredTaskDecorator implementation
 ColoredTaskDecorator::ColoredTaskDecorator(std::shared_ptr<Task> assignment,
                                            Color color)
     : TaskDecorator(assignment), color(color) {}

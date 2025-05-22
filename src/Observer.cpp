@@ -4,13 +4,11 @@
 #include <chrono>
 #include <iostream>
 
-// DeadlineObserver implementation
 void DeadlineObserver::update(const std::string &message, void *subject) {
   if (auto task = static_cast<Task *>(subject)) {
     auto now = std::chrono::system_clock::now();
     auto deadline = task->getDeadline();
 
-    // Calculate days until deadline
     auto daysUntilDeadline =
         std::chrono::duration_cast<std::chrono::hours>(deadline - now).count() /
         24;
@@ -25,7 +23,6 @@ void DeadlineObserver::update(const std::string &message, void *subject) {
                   << subject->getCode() << ")" << std::endl;
       }
     } else if (daysUntilDeadline < 0) {
-      // Task is overdue
       std::cout << "[OVERDUE NOTICE] " << message << std::endl;
       std::cout << "  Task: " << task->getTitle() << " is overdue by "
                 << -daysUntilDeadline << " days." << std::endl;
@@ -38,7 +35,6 @@ void DeadlineObserver::update(const std::string &message, void *subject) {
   }
 }
 
-// GradeObserver implementation
 void GradeObserver::update(const std::string &message, void *subject) {
   std::cout << "[GRADE NOTIFICATION] " << message << std::endl;
 
@@ -53,12 +49,9 @@ void GradeObserver::update(const std::string &message, void *subject) {
   } else if (Subject *subject = static_cast<Subject *>(subject)) {
     std::cout << "  Subject: " << subject->getName() << " ("
               << subject->getCode() << ")" << std::endl;
-    // For final subject grades, we'd need additional information not currently
-    // available
   }
 }
 
-// ProgressObserver implementation
 void ProgressObserver::update(const std::string &message, void *subject) {
   if (auto task = static_cast<Task *>(subject)) {
     float currentProgress = task->getProgress();
@@ -79,7 +72,6 @@ void ProgressObserver::update(const std::string &message, void *subject) {
   }
 }
 
-// ObservableTask implementation
 void ObservableTask::deadlineApproaching() {
   notify("Deadline is approaching!");
 }
@@ -96,7 +88,6 @@ void ObservableTask::gradeAssigned(int marks) {
   notify("Grade assigned: " + std::to_string(marks) + " marks");
 }
 
-// ObservableSubject implementation
 void ObservableSubject::taskAdded(const std::string &taskTitle) {
   notify("New task added: " + taskTitle);
 }

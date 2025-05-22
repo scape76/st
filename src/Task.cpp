@@ -6,7 +6,6 @@
 #include <iostream>
 #include <sstream>
 
-// Helper function to format DateTime
 std::string formatDateTime(const DateTime &dt) {
   auto time = std::chrono::system_clock::to_time_t(dt);
   std::tm tm_local = {};
@@ -17,7 +16,6 @@ std::string formatDateTime(const DateTime &dt) {
   tm_local = *std::localtime(&time);
 #endif
 
-  // Apply timezone offset correction to keep original input time
   std::time_t now = std::time(nullptr);
   std::tm tm_now = {};
 
@@ -31,18 +29,15 @@ std::string formatDateTime(const DateTime &dt) {
   std::time_t local = std::time(nullptr);
   double diff = std::difftime(local, gmt);
 
-  // Adjust the time to ensure it displays as entered
   std::stringstream ss;
   ss << std::put_time(&tm_local, "%Y-%m-%d %H:%M");
   return ss.str();
 }
 
-// Base Task implementation
 Task::Task(const std::string &title, const DateTime &deadline,
            const std::string &description)
     : title(title), description(description), deadline(deadline),
       completed(false), marks(0), progress(0.0f) {
-  // Initialize with NotStartedState
   state = NotStartedState::getInstance();
   state->setContext(this);
 }
@@ -81,10 +76,8 @@ void Task::setCompleted(bool completed) {
   this->completed = completed;
 
   if (completed) {
-    // Update state through state pattern
     state->complete(marks);
   } else if (state->getName() == "Completed") {
-    // Revert to not started state if uncompleting a completed task
     setState(NotStartedState::getInstance());
   }
 }
@@ -93,7 +86,6 @@ void Task::setMarks(int marks) { this->marks = marks; }
 
 void Task::setProgress(float progress) { this->progress = progress; }
 
-// State pattern methods
 void Task::setState(std::shared_ptr<TaskState> newState) {
   this->state = newState;
   this->state->setContext(this);
@@ -152,7 +144,6 @@ void Task::displayInfo() const {
   std::cout << "Notifications: " << notifications.size() << std::endl;
 }
 
-// Memento pattern methods
 std::shared_ptr<TaskMemento> Task::createMemento() const {
   std::string subjectCode = "";
   if (auto subjectPtr = getSubject()) {
@@ -172,7 +163,6 @@ void Task::restoreFromMemento(const std::shared_ptr<TaskMemento> &memento) {
   marks = memento->getMarks();
   progress = memento->getProgress();
 
-  // Restore state based on the state name
   std::string stateName = memento->getState();
   if (stateName == "Not Started") {
     setState(NotStartedState::getInstance());
@@ -183,27 +173,20 @@ void Task::restoreFromMemento(const std::shared_ptr<TaskMemento> &memento) {
   } else if (stateName == "Overdue") {
     setState(std::make_shared<OverdueState>(deadline));
   }
-
-  // Note: The subject reference will need to be reconnected separately
-  // since we only store the subject code in the memento
 }
 
-// LabTask implementation
 LabTask::LabTask(const std::string &title, const DateTime &deadline,
                  const std::string &description)
     : Task(title, deadline, description) {}
 
-// ProjectTask implementation
 ProjectTask::ProjectTask(const std::string &title, const DateTime &deadline,
                          const std::string &description)
     : Task(title, deadline, description) {}
 
-// ExamTask implementation
 ExamTask::ExamTask(const std::string &title, const DateTime &deadline,
                    const std::string &description)
     : Task(title, deadline, description) {}
 
-// Factory implementations
 std::shared_ptr<Task> LabFactory::createTask(const std::string &title,
                                              const DateTime &deadline,
                                              const std::string &description) {

@@ -1,0 +1,68 @@
+[
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/CompositeTask.cpp.o -c /home/dan/code/st/src/CompositeTask.cpp",
+  "file": "/home/dan/code/st/src/CompositeTask.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/CompositeTask.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/GradingSystemFacade.cpp.o -c /home/dan/code/st/src/GradingSystemFacade.cpp",
+  "file": "/home/dan/code/st/src/GradingSystemFacade.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/GradingSystemFacade.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/Notification.cpp.o -c /home/dan/code/st/src/Notification.cpp",
+  "file": "/home/dan/code/st/src/Notification.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/Notification.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/Observer.cpp.o -c /home/dan/code/st/src/Observer.cpp",
+  "file": "/home/dan/code/st/src/Observer.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/Observer.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/Subject.cpp.o -c /home/dan/code/st/src/Subject.cpp",
+  "file": "/home/dan/code/st/src/Subject.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/Subject.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/Task.cpp.o -c /home/dan/code/st/src/Task.cpp",
+  "file": "/home/dan/code/st/src/Task.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/Task.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/TaskBuilder.cpp.o -c /home/dan/code/st/src/TaskBuilder.cpp",
+  "file": "/home/dan/code/st/src/TaskBuilder.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/TaskBuilder.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/TaskDecorator.cpp.o -c /home/dan/code/st/src/TaskDecorator.cpp",
+  "file": "/home/dan/code/st/src/TaskDecorator.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/TaskDecorator.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/TaskProcess.cpp.o -c /home/dan/code/st/src/TaskProcess.cpp",
+  "file": "/home/dan/code/st/src/TaskProcess.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/TaskProcess.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_core.dir/src/TaskState.cpp.o -c /home/dan/code/st/src/TaskState.cpp",
+  "file": "/home/dan/code/st/src/TaskState.cpp",
+  "output": "CMakeFiles/academic_core.dir/src/TaskState.cpp.o"
+},
+{
+  "directory": "/home/dan/code/st/build_wasm",
+  "command": "/home/dan/code/emsdk/upstream/emscripten/em++  -I/home/dan/code/st/include -std=c++17 -o CMakeFiles/academic_wasm.dir/src/bindings.cpp.o -c /home/dan/code/st/src/bindings.cpp",
+  "file": "/home/dan/code/st/src/bindings.cpp",
+  "output": "CMakeFiles/academic_wasm.dir/src/bindings.cpp.o"
+}
+]

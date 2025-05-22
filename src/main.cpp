@@ -21,51 +21,36 @@
 #include "../include/TaskProcess.h"
 #include "../include/TaskState.h"
 
-// Forward declaration for ObservableTask
 class ObservableTask;
 
-// Global containers to store subjects and tasks
 std::vector<std::shared_ptr<Subject>> subjects;
 
-// Global grading system facade with mock implementations
 std::shared_ptr<GradingSystemFacade> gradingSystemFacade;
 
-// Global MementoCaretaker for save/restore functionality
 MementoCaretaker caretaker;
 
-// Global observers
 std::shared_ptr<DeadlineObserver> deadlineObserver;
 
-// Initialize application components
 void initializeApplication() {
-  // Create mock external systems
   auto universitySystem = std::make_shared<MockUniversityGradingSystem>();
   auto onlinePlatformSystem =
       std::make_shared<MockOnlinePlatformGradingSystem>();
 
-  // Create adapters
   auto universityAdapter =
       std::make_shared<UniversityGradingSystemAdapter>(universitySystem);
   auto onlinePlatformAdapter =
       std::make_shared<OnlinePlatformGradingSystemAdapter>(
           onlinePlatformSystem);
 
-  // Create the facade with a default student ID
   gradingSystemFacade = std::make_shared<GradingSystemFacade>("S12345");
 
-  // Register the grading systems with the facade
   gradingSystemFacade->registerGradingSystem("University", universityAdapter);
   gradingSystemFacade->registerGradingSystem("OnlinePlatform",
                                              onlinePlatformAdapter);
 
-  // Set the university system as active by default
   gradingSystemFacade->setActiveGradingSystem("University");
-
-  // Initialize observers
-  deadlineObserver = std::make_shared<DeadlineObserver>(3); // 3 days warning
 }
 
-// Helper functions
 void clearInputBuffer() {
   std::cin.clear();
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -93,7 +78,6 @@ int getIntInput(const std::string &prompt,
     }
   } while (!validInput);
 
-  // Clear the newline character left in the buffer after reading an int
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   return value;
 }
@@ -103,7 +87,6 @@ std::string getStringInput(const std::string &prompt) {
   std::cout << prompt;
   std::getline(std::cin, input);
 
-  // Trim leading and trailing whitespace
   if (!input.empty()) {
     size_t first = input.find_first_not_of(" \t\n\r");
     size_t last = input.find_last_not_of(" \t\n\r");
@@ -136,25 +119,20 @@ DateTime getDateTimeInput(const std::string &prompt) {
     }
   } while (!validInput);
 
-  // Save the original hours and minutes that the user entered
   int original_hour = timeinfo.tm_hour;
   int original_min = timeinfo.tm_min;
 
-  // Convert std::tm to system_clock::time_point
   std::time_t time = std::mktime(&timeinfo);
   auto time_point = std::chrono::system_clock::from_time_t(time);
 
-  // Convert back to check if hours were changed due to timezone
   auto time_t_check = std::chrono::system_clock::to_time_t(time_point);
   std::tm *timeinfo_check = std::localtime(&time_t_check);
 
-  // If hours changed, compensate to preserve user input
   if (timeinfo_check->tm_hour != original_hour ||
       timeinfo_check->tm_min != original_min) {
     int hour_diff = original_hour - timeinfo_check->tm_hour;
     int min_diff = original_min - timeinfo_check->tm_min;
 
-    // Add the difference to preserve original time
     time_point +=
         std::chrono::hours(hour_diff) + std::chrono::minutes(min_diff);
   }
@@ -162,7 +140,6 @@ DateTime getDateTimeInput(const std::string &prompt) {
   return time_point;
 }
 
-// Function to create a new subject
 void createSubject() {
   std::cout << "\n===== Create New Subject =====\n";
 
@@ -186,7 +163,6 @@ void createSubject() {
 
   description = getStringInput("Enter subject description (optional): ");
 
-  // Using the Builder pattern to create the subject
   try {
     auto subject = SubjectBuilder()
                        .setName(name)
@@ -201,7 +177,6 @@ void createSubject() {
   }
 }
 
-// Function to list all subjects
 void listSubjects() {
   std::cout << "\n===== Subjects =====\n";
 
@@ -216,7 +191,6 @@ void listSubjects() {
   }
 }
 
-// Function to select a subject from the list
 std::shared_ptr<Subject> selectSubject() {
   if (subjects.empty()) {
     std::cout << "No subjects available. Create a subject first.\n";
@@ -230,7 +204,6 @@ std::shared_ptr<Subject> selectSubject() {
   return subjects[choice - 1];
 }
 
-// Function to create a new task
 void createTask() {
   std::cout << "\n===== Create New Task =====\n";
 
@@ -250,14 +223,12 @@ void createTask() {
       getStringInput("Enter task description (optional): ");
   DateTime deadline = getDateTimeInput("Enter task deadline");
 
-  // Show task type options
   std::cout << "Select task type:\n";
   std::cout << "1. Lab\n";
   std::cout << "2. Project\n";
   std::cout << "3. Exam\n";
   int typeChoice = getIntInput("Enter your choice (1-3): ", 1, 3);
 
-  // Using the Builder pattern and Factory method to create the task
   try {
     TaskBuilder builder;
     builder.setTitle(title).setDescription(description).setDeadline(deadline);
@@ -277,7 +248,6 @@ void createTask() {
     auto task = builder.build();
     subject->addTask(task);
 
-    // Ask if the user wants to add a notification
     std::cout << "Do you want to add a notification for this task?\n";
     std::cout << "1. Yes\n";
     std::cout << "2. No\n";
@@ -292,7 +262,6 @@ void createTask() {
       auto notification =
           std::make_shared<DeadlineNotification>(message, task, days);
 
-      // Using the Singleton pattern to access the NotificationManager
       NotificationManager::getInstance().addNotification(notification);
       std::cout << "Notification set for " << days
                 << " days before the deadline.\n";
@@ -304,7 +273,6 @@ void createTask() {
   }
 }
 
-// Function to list tasks for a subject
 void listTasks() {
   std::cout << "\n===== Tasks =====\n";
 
@@ -332,7 +300,6 @@ void listTasks() {
   }
 }
 
-// Function to view task details
 void viewTaskDetails() {
   std::cout << "\n===== Task Details =====\n";
 
@@ -360,7 +327,6 @@ void viewTaskDetails() {
   std::cout << "\n";
   task->displayInfo();
 
-  // Show notifications for this task
   auto &notificationManager = NotificationManager::getInstance();
   auto notifications = notificationManager.getNotificationsForTask(task);
 
@@ -389,7 +355,6 @@ void viewTaskDetails() {
   }
 }
 
-// Function to check for notifications
 void checkNotifications() {
   std::cout << "\n===== Checking Notifications =====\n";
 
@@ -397,7 +362,6 @@ void checkNotifications() {
   notificationManager.checkNotifications();
 }
 
-// Function to view all notifications
 void viewAllNotifications() {
   std::cout << "\n===== All Notifications =====\n";
 
@@ -438,7 +402,6 @@ void viewAllNotifications() {
   }
 }
 
-// Function to save the current application state
 void saveApplicationState() {
   std::cout << "\n===== Save Application State =====\n";
 
@@ -446,11 +409,9 @@ void saveApplicationState() {
       getStringInput("Enter a description for this save point: ");
   auto memento = std::make_shared<AcademicProgressMemento>(description);
 
-  // Save subjects
   for (const auto &subject : subjects) {
     memento->addSubjectMemento(subject->createMemento());
 
-    // Save tasks for this subject
     for (const auto &task : subject->getTasks()) {
       memento->addTaskMemento(task->createMemento());
     }
@@ -458,7 +419,6 @@ void saveApplicationState() {
 
   caretaker.addMemento(memento);
 
-  // Save to file
   std::string filename =
       "academic_progress_" + memento->getTimestamp() + ".save";
   bool success = caretaker.saveToFile(filename);
@@ -471,16 +431,13 @@ void saveApplicationState() {
   }
 }
 
-// Function to restore a previously saved application state
 void restoreApplicationState() {
   std::cout << "\n===== Restore Application State =====\n";
 
-  // First check if we have any saved states
   if (caretaker.getMementoCount() == 0) {
     std::cout << "No saved states available. Checking for save files..."
               << std::endl;
 
-    // Try to load from file
     std::string filename =
         getStringInput("Enter the name of the save file to load: ");
     bool success = caretaker.loadFromFile(filename);
@@ -493,7 +450,6 @@ void restoreApplicationState() {
     std::cout << "Save file loaded successfully." << std::endl;
   }
 
-  // Display available saved states
   auto mementos = caretaker.getAllMementos();
   std::cout << "Available saved states:" << std::endl;
 
@@ -507,10 +463,8 @@ void restoreApplicationState() {
                            1, mementos.size());
   auto selectedMemento = mementos[choice - 1];
 
-  // Clear current state
   subjects.clear();
 
-  // First restore subjects
   std::map<std::string, std::shared_ptr<Subject>> subjectMap;
   for (const auto &subjectMemento : selectedMemento->getSubjects()) {
     auto subject = std::make_shared<Subject>("", "", "");
@@ -519,9 +473,7 @@ void restoreApplicationState() {
     subjectMap[subject->getCode()] = subject;
   }
 
-  // Then restore tasks and link them to subjects
   for (const auto &taskMemento : selectedMemento->getTasks()) {
-    // Create the appropriate type of task
     std::shared_ptr<Task> task;
     std::string taskType = taskMemento->getState();
     if (taskType == "Lab") {
@@ -538,10 +490,8 @@ void restoreApplicationState() {
           std::make_shared<LabTask>("", std::chrono::system_clock::now(), "");
     }
 
-    // Restore task state
     task->restoreFromMemento(taskMemento);
 
-    // Link to subject
     std::string subjectCode = taskMemento->getSubjectCode();
     if (subjectMap.find(subjectCode) != subjectMap.end()) {
       subjectMap[subjectCode]->addTask(task);
@@ -552,7 +502,6 @@ void restoreApplicationState() {
   std::cout << "Restored " << subjects.size() << " subjects." << std::endl;
 }
 
-// Function to update an task's state
 void updateTaskState() {
   std::cout << "\n===== Update Task State =====\n";
 
@@ -621,7 +570,6 @@ void updateTaskState() {
   }
 }
 
-// Function to process an task using the Template Method pattern
 void processTaskWithTemplate() {
   std::cout << "\n===== Process Task with Template Method =====\n";
 
@@ -650,7 +598,6 @@ void processTaskWithTemplate() {
 
   std::string submission = getStringInput("Enter submission content: ");
 
-  // Create the appropriate processor based on task type
   std::shared_ptr<TaskProcess> processor;
 
   if (auto hw = std::dynamic_pointer_cast<LabTask>(task)) {
@@ -660,15 +607,12 @@ void processTaskWithTemplate() {
   } else if (auto exam = std::dynamic_pointer_cast<ExamTask>(task)) {
     processor = std::make_shared<ExamProcess>();
   } else {
-    // Default to lab processor
     processor = std::make_shared<LabProcess>();
   }
 
-  // Process the task using the template method
   processor->processTask(task, submission);
 }
 
-// Function to subscribe to task updates using the Observer pattern
 void subscribeToTask() {
   std::cout << "\n===== Subscribe to Task Updates =====\n";
 
@@ -695,13 +639,10 @@ void subscribeToTask() {
                            1, tasks.size());
   auto task = tasks[choice - 1];
 
-  // We'll use a simple ObservableTask for this demo
   std::shared_ptr<ObservableTask> observableTask =
       std::make_shared<ObservableTask>();
 
   std::cout << "Creating an observable wrapper for this task..." << std::endl;
-  // Here we would create an adapter or wrapper to make the task observable
-  // For this demo, we'll just use a new mock ObservableTask
 
   std::cout << "Select observer type:\n";
   std::cout << "1. Deadline Observer (deadline warnings)\n";
@@ -730,20 +671,16 @@ void subscribeToTask() {
     observer = deadlineObserver;
   }
 
-  // Attach the observer
   observableTask->attach(observer);
 
   std::cout << "Observer attached successfully. You will now receive "
                "notifications for this task."
             << std::endl;
 
-  // Trigger a test notification
   std::cout << "\nSending test notification..." << std::endl;
-  // Use the task state name for the notification
   observableTask->stateChanged(task ? task->getStateName() : "Unknown");
 }
 
-// Function prototypes
 void markTaskAsCompleted();
 void decorateTask();
 void createCompositeTask();
@@ -755,7 +692,6 @@ void updateTaskState();
 void processTaskWithTemplate();
 void subscribeToTask();
 
-// Main menu function
 void showMainMenu() {
   std::cout << "\n===== Academic Progress Tracker =====\n";
   std::cout << "1. Create a new subject\n";
@@ -766,15 +702,6 @@ void showMainMenu() {
   std::cout << "6. Check notifications\n";
   std::cout << "7. View all notifications\n";
   std::cout << "8. Mark task as completed\n";
-  // std::cout << "9. Decorate task (Add priority/tags/color)\n";
-  // std::cout << "10. Create composite task\n";
-  // std::cout << "11. Submit task to grading system\n";
-  // std::cout << "12. Switch grading system\n";
-  // std::cout << "13. Save application state\n";
-  // std::cout << "14. Restore application state\n";
-  // std::cout << "15. Update task state\n";
-  // std::cout << "16. Process task with template method\n";
-  // std::cout << "17. Subscribe to task updates\n";
   std::cout << "0. Exit\n";
   std::cout << "=================================\n";
 }
@@ -847,11 +774,9 @@ int main() {
     }
   }
 
-  std::cout << "Thank you for using the Academic Progress Tracker!\n";
   return 0;
 }
 
-// Function to mark an task as completed
 void markTaskAsCompleted() {
   std::cout << "\n===== Mark Task as Completed =====\n";
 
@@ -894,7 +819,6 @@ void markTaskAsCompleted() {
     task->setMarks(marks);
     std::cout << "Task marked as completed with " << marks << " marks.\n";
 
-    // Show grade representation from the grading system
     std::string grade = gradingSystemFacade->getGradeRepresentation(marks);
     std::cout << "Grade in " << gradingSystemFacade->getActiveSystemName()
               << ": " << grade << "\n";
@@ -905,7 +829,6 @@ void markTaskAsCompleted() {
   }
 }
 
-// Function to decorate an task with priority, tags, or color
 void decorateTask() {
   std::cout << "\n===== Decorate Task =====\n";
 
@@ -1003,7 +926,6 @@ void decorateTask() {
   }
 
   if (decoratedTask) {
-    // Replace the task in the subject with the decorated version
     subject->removeTask(baseTask->getTitle());
     subject->addTask(decoratedTask);
 
@@ -1012,7 +934,6 @@ void decorateTask() {
   }
 }
 
-// Function to create a composite task (with sub-tasks)
 void createCompositeTask() {
   std::cout << "\n===== Create Composite Task =====\n";
 
@@ -1030,11 +951,9 @@ void createCompositeTask() {
       getStringInput("Enter composite task description (optional): ");
   DateTime deadline = getDateTimeInput("Enter composite task deadline");
 
-  // Create the composite task
   auto compositeTask =
       std::make_shared<CompositeTask>(title, deadline, description);
 
-  // Add child tasks
   bool addingChildren = true;
   while (addingChildren) {
     std::cout << "\nAdd child task to " << title << ":\n";
@@ -1048,7 +967,6 @@ void createCompositeTask() {
       continue;
     }
 
-    // Create a child task
     std::string childTitle = getStringInput("Enter child task title: ");
     if (childTitle.empty()) {
       std::cout << "Task title cannot be empty. Skipping this child.\n";
@@ -1058,10 +976,6 @@ void createCompositeTask() {
     std::string childDescription =
         getStringInput("Enter child task description (optional): ");
 
-    // For simplicity, child tasks inherit parent's deadline
-    // But you could also get a separate deadline if needed
-
-    // Show task type options
     std::cout << "Select child task type:\n";
     std::cout << "1. Lab\n";
     std::cout << "2. Project\n";
@@ -1085,19 +999,16 @@ void createCompositeTask() {
       break;
     }
 
-    // Add the child to the composite
     compositeTask->addChildTask(childTask);
     std::cout << "Child task added: " << childTitle << "\n";
   }
 
-  // Add the composite task to the subject
   subject->addTask(compositeTask);
 
   std::cout << "Composite task created with "
             << compositeTask->getChildTasks().size() << " child tasks.\n";
 }
 
-// Function to submit an task to the grading system
 void submitTaskToGradingSystem() {
   std::cout << "\n===== Submit Task to Grading System =====\n";
   std::cout << "Using grading system: "
@@ -1135,10 +1046,8 @@ void submitTaskToGradingSystem() {
       getStringInput("Enter submission content (e.g., file path or text): ");
 
   try {
-    // Submit the task using the facade
     gradingSystemFacade->submitTask(task, submissionContent);
 
-    // Check if the submission was successful and update the task status
     if (gradingSystemFacade->isCompleted(task)) {
       int score = gradingSystemFacade->getScore(task);
       task->setCompleted(true);
@@ -1157,7 +1066,6 @@ void submitTaskToGradingSystem() {
   }
 }
 
-// Function to switch between grading systems
 void switchGradingSystem() {
   std::cout << "\n===== Switch Grading System =====\n";
 

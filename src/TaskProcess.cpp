@@ -3,7 +3,6 @@
 #include <iostream>
 #include <random>
 
-// LabProcess implementation
 void LabProcess::validateTask(std::shared_ptr<Task> task) {
   std::cout << "Validating lab task: " << task->getTitle() << std::endl;
 
@@ -23,7 +22,6 @@ bool LabProcess::checkPrerequisites(std::shared_ptr<Task> task) {
   std::cout << "Checking prerequisites for lab task: " << task->getTitle()
             << std::endl;
 
-  // For lab, we just check if it's overdue
   auto now = std::chrono::system_clock::now();
   bool isOverdue = (now > task->getDeadline());
 
@@ -35,7 +33,6 @@ bool LabProcess::checkPrerequisites(std::shared_ptr<Task> task) {
     std::cout << "Task is being submitted before the deadline." << std::endl;
   }
 
-  // We allow late submissions for lab, but with penalties
   return true;
 }
 
@@ -46,22 +43,17 @@ void LabProcess::processSubmission(std::shared_ptr<Task> task,
   std::cout << "Submission content length: " << submission.length()
             << " characters" << std::endl;
 
-  // Simulating submission processing
   std::cout << "Checking for plagiarism..." << std::endl;
   std::cout << "Saving submission to database..." << std::endl;
 
-  // Update task progress to 100%
   task->setProgress(100.0f);
 }
 
 int LabProcess::evaluateTask(std::shared_ptr<Task> task) {
   std::cout << "Evaluating lab: " << task->getTitle() << std::endl;
 
-  // Simulating automatic grading based on length of title (just for demo)
-  // A real implementation would have actual grading logic
-  int baseScore = 70; // Base score for lab
+  int baseScore = 70;
 
-  // Random component for demo
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> dis(0, 30);
@@ -101,14 +93,12 @@ void LabProcess::provideFeedback(std::shared_ptr<Task> task, int score) {
 void LabProcess::updateRecords(std::shared_ptr<Task> task, int score) {
   std::cout << "Updating records for lab: " << task->getTitle() << std::endl;
 
-  // Update the task
   task->setCompleted(true);
   task->setMarks(score);
   std::cout << "Task status updated: Completed with " << score << " marks"
             << std::endl;
 }
 
-// ProjectProcess implementation
 void ProjectProcess::validateTask(std::shared_ptr<Task> task) {
   std::cout << "Validating project task: " << task->getTitle() << std::endl;
 
@@ -128,7 +118,6 @@ bool ProjectProcess::checkPrerequisites(std::shared_ptr<Task> task) {
   std::cout << "Checking prerequisites for project: " << task->getTitle()
             << std::endl;
 
-  // For projects, check if it's not too overdue (within 3 days)
   auto now = std::chrono::system_clock::now();
   auto deadline = task->getDeadline();
   auto daysLate =
@@ -162,23 +151,19 @@ void ProjectProcess::processSubmission(std::shared_ptr<Task> task,
   std::cout << "Project documentation length: " << submission.length()
             << " characters" << std::endl;
 
-  // Simulating project submission processing
   std::cout << "Validating project structure..." << std::endl;
   std::cout << "Checking for required components..." << std::endl;
   std::cout << "Running automated tests..." << std::endl;
   std::cout << "Archiving project files..." << std::endl;
 
-  // Update task progress to 100%
   task->setProgress(100.0f);
 }
 
 int ProjectProcess::evaluateTask(std::shared_ptr<Task> task) {
   std::cout << "Evaluating project: " << task->getTitle() << std::endl;
 
-  // Projects typically have a higher base score due to their complexity
   int baseScore = 75;
 
-  // Random component for demo
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> dis(0, 25);
@@ -188,7 +173,6 @@ int ProjectProcess::evaluateTask(std::shared_ptr<Task> task) {
   if (finalScore > 100)
     finalScore = 100;
 
-  // Late penalty if applicable
   auto now = std::chrono::system_clock::now();
   if (now > task->getDeadline()) {
     auto daysLate = std::chrono::duration_cast<std::chrono::hours>(
@@ -237,18 +221,15 @@ void ProjectProcess::updateRecords(std::shared_ptr<Task> task, int score) {
   std::cout << "Updating records for project: " << task->getTitle()
             << std::endl;
 
-  // Update the task
   task->setCompleted(true);
   task->setMarks(score);
   std::cout << "Project status updated: Completed with " << score << " marks"
             << std::endl;
 
-  // For projects, we might also update portfolio or showcase information
   std::cout << "Adding project to student portfolio..." << std::endl;
 }
 
 void ProjectProcess::beforeSubmission(std::shared_ptr<Task> task) {
-  // Override the hook method to add project-specific pre-processing
   std::cout << "=== PROJECT SUBMISSION PROCESS STARTED ===" << std::endl;
   std::cout << "Running pre-submission checks for project: " << task->getTitle()
             << std::endl;
@@ -256,7 +237,6 @@ void ProjectProcess::beforeSubmission(std::shared_ptr<Task> task) {
   std::cout << "Verifying project structure..." << std::endl;
 }
 
-// ExamProcess implementation
 void ExamProcess::validateTask(std::shared_ptr<Task> task) {
   std::cout << "Validating exam task: " << task->getTitle() << std::endl;
 
@@ -276,7 +256,6 @@ bool ExamProcess::checkPrerequisites(std::shared_ptr<Task> task) {
   std::cout << "Checking prerequisites for exam: " << task->getTitle()
             << std::endl;
 
-  // For exams, usually no late submissions are allowed at all
   auto now = std::chrono::system_clock::now();
   bool isOnTime = (now <= task->getDeadline());
 
@@ -299,22 +278,16 @@ void ExamProcess::processSubmission(std::shared_ptr<Task> task,
   std::cout << "Submission length: " << submission.length() << " characters"
             << std::endl;
 
-  // Simulating exam processing steps
   std::cout << "Logging submission time..." << std::endl;
   std::cout << "Verifying exam integrity..." << std::endl;
   std::cout << "Preparing for blind grading..." << std::endl;
 
-  // Update task progress to 100%
   task->setProgress(100.0f);
 }
 
 int ExamProcess::evaluateTask(std::shared_ptr<Task> task) {
   std::cout << "Evaluating exam: " << task->getTitle() << std::endl;
 
-  // Simulating rigorous exam grading
-  // A real implementation would have actual grading logic
-
-  // Random component for demo
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> dis(40, 100);
@@ -328,11 +301,8 @@ int ExamProcess::evaluateTask(std::shared_ptr<Task> task) {
 void ExamProcess::provideFeedback(std::shared_ptr<Task> task, int score) {
   std::cout << "Providing feedback for exam: " << task->getTitle() << std::endl;
 
-  // Exams often have different feedback mechanics
   std::cout << "Score breakdown by section:" << std::endl;
 
-  // Simulating section scores (would be pulled from actual grading in a real
-  // system)
   std::random_device rd;
   std::mt19937 gen(rd());
 
@@ -344,18 +314,16 @@ void ExamProcess::provideFeedback(std::shared_ptr<Task> task, int score) {
   int s2 = section2(gen);
   int s3 = section3(gen);
 
-  // Adjust to match the given total score
   float scaleFactor = static_cast<float>(score) / (s1 + s2 + s3);
   s1 = static_cast<int>(s1 * scaleFactor);
   s2 = static_cast<int>(s2 * scaleFactor);
-  s3 = score - s1 - s2; // Ensure all sections add up to the total score
+  s3 = score - s1 - s2;
 
   std::cout << "Section 1 (Multiple Choice): " << s1 << "/25" << std::endl;
   std::cout << "Section 2 (Short Answer): " << s2 << "/35" << std::endl;
   std::cout << "Section 3 (Essay Questions): " << s3 << "/40" << std::endl;
   std::cout << "Total: " << score << "/100" << std::endl;
 
-  // General feedback based on score
   if (score >= 90) {
     std::cout << "Excellent understanding of all concepts!" << std::endl;
   } else if (score >= 80) {
@@ -376,20 +344,17 @@ void ExamProcess::provideFeedback(std::shared_ptr<Task> task, int score) {
 void ExamProcess::updateRecords(std::shared_ptr<Task> task, int score) {
   std::cout << "Updating records for exam: " << task->getTitle() << std::endl;
 
-  // Update the task
   task->setCompleted(true);
   task->setMarks(score);
   std::cout << "Exam status updated: Completed with " << score << " marks"
             << std::endl;
 
-  // For exams, additional record updates might be required
   std::cout << "Updating academic transcript..." << std::endl;
   std::cout << "Checking if this affects course completion status..."
             << std::endl;
 }
 
 void ExamProcess::afterCompletion(std::shared_ptr<Task> task) {
-  // Override the hook method to add exam-specific post-processing
   std::cout << "Exam processing completed for: " << task->getTitle()
             << std::endl;
   std::cout << "Generating performance analytics..." << std::endl;

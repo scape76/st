@@ -1,0 +1,1 @@
+/home/dan/code/emsdk/upstream/emscripten/em++ @CMakeFiles/academic_tracker.dir/objects1.rsp -o academic_tracker.js @CMakeFiles/academic_tracker.dir/linkLibs.rsp

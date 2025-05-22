@@ -2,10 +2,8 @@
 #include "../include/Task.h"
 #include <iostream>
 
-// Initialize the static instance for NotStartedState
 std::shared_ptr<NotStartedState> NotStartedState::instance = nullptr;
 
-// Factory method to get the singleton instance
 std::shared_ptr<TaskState> NotStartedState::getInstance() {
   if (!instance) {
     instance = std::shared_ptr<NotStartedState>(new NotStartedState());
@@ -13,7 +11,6 @@ std::shared_ptr<TaskState> NotStartedState::getInstance() {
   return instance;
 }
 
-// NotStartedState implementation
 void NotStartedState::start() {
   std::cout << "Starting task '" << context->getTitle() << "'." << std::endl;
   context->setState(std::make_shared<InProgressState>(0.0f));
@@ -48,7 +45,6 @@ void NotStartedState::handleNotification() {
   std::cout << "Due date is approaching." << std::endl;
 }
 
-// InProgressState implementation
 void InProgressState::start() {
   std::cout << "Task '" << context->getTitle() << "' is already in progress."
             << std::endl;
@@ -65,7 +61,6 @@ void InProgressState::makeProgress(float percentage) {
   progressPercentage = percentage;
   context->setProgress(percentage);
 
-  // If progress reaches 100%, transition to completed state
   if (progressPercentage >= 100.0f) {
     std::cout << "Task '" << context->getTitle() << "' is now complete!"
               << std::endl;
@@ -94,7 +89,6 @@ void InProgressState::handleNotification() {
   std::cout << "Keep working to finish before the deadline!" << std::endl;
 }
 
-// CompletedState implementation
 void CompletedState::start() {
   std::cout << "Cannot start task '" << context->getTitle()
             << "' as it is already completed." << std::endl;
@@ -120,7 +114,6 @@ void CompletedState::complete(int marks) {
 }
 
 void CompletedState::checkDeadline() {
-  // No state change needed for completed tasks regardless of deadline
   std::cout << "Task '" << context->getTitle()
             << "' is completed, so deadline check is not relevant."
             << std::endl;
@@ -132,7 +125,6 @@ void CompletedState::handleNotification() {
             << std::endl;
 }
 
-// OverdueState implementation
 void OverdueState::start() {
   std::cout << "Starting overdue task '" << context->getTitle() << "'."
             << std::endl;
@@ -148,12 +140,10 @@ void OverdueState::makeProgress(float percentage) {
 void OverdueState::complete(int marks) {
   std::cout << "Completing overdue task '" << context->getTitle() << "' with "
             << marks << " marks." << std::endl;
-  // Even though it's late, we can still complete it
   context->setState(std::make_shared<CompletedState>(marks));
 }
 
 void OverdueState::checkDeadline() {
-  // Already overdue, no state change
   std::cout << "Task '" << context->getTitle() << "' is already overdue."
             << std::endl;
 }

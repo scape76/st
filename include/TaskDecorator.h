@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-// Base Task Decorator
 class TaskDecorator : public Task {
 protected:
   std::shared_ptr<Task> wrappedTask;
@@ -13,7 +12,6 @@ protected:
 public:
   TaskDecorator(std::shared_ptr<Task> assignment);
 
-  // Override Task's methods to delegate to wrapped assignment
   std::string getTitle() const override;
   std::string getDescription() const override;
   DateTime getDeadline() const override;
@@ -32,16 +30,13 @@ public:
   void addNotification(std::shared_ptr<Notification> notification) override;
   void removeNotification(size_t index) override;
 
-  // These methods are pure virtual in the base class, so we need to implement
-  // them
   virtual void displayInfo() const override;
   virtual std::string getType() const override;
 };
 
-// PriorityTaskDecorator adds priority functionality
 class PriorityTaskDecorator : public TaskDecorator {
 private:
-  int priorityLevel; // 1-5, with 5 being highest priority
+  int priorityLevel;
 
 public:
   PriorityTaskDecorator(std::shared_ptr<Task> assignment,
@@ -53,7 +48,6 @@ public:
   void displayInfo() const override;
 };
 
-// TaggedTaskDecorator adds custom tags to assignments
 class TaggedTaskDecorator : public TaskDecorator {
 private:
   std::vector<std::string> tags;
@@ -69,16 +63,15 @@ public:
   void displayInfo() const override;
 };
 
-// ColoredTaskDecorator adds color-coding to assignments
 class ColoredTaskDecorator : public TaskDecorator {
 public:
   enum class Color {
-    RED,    // Urgent
-    YELLOW, // Important
-    GREEN,  // Normal
-    BLUE,   // Low priority
-    PURPLE, // Special
-    DEFAULT // No color
+    RED,
+    YELLOW,
+    GREEN,
+    BLUE,
+    PURPLE,
+    DEFAULT
   };
 
 private:
@@ -95,4 +88,4 @@ public:
   void displayInfo() const override;
 };
 
-#endif // ASSIGNMENT_DECORATOR_H
+#endif
