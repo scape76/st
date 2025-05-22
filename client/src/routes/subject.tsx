@@ -7,7 +7,7 @@ const subjectRoute = createRoute({
   loader: ({ context, params }) => {
     console.log("params ", params);
     const subject = context.at.getSubject(params.code);
-    const tasks = context.at.getTasksForSubject(params.code);
+    const tasks = context.at.getSubjectTasks(params.code);
 
     return {
       subject,
@@ -20,9 +20,6 @@ const subjectRoute = createRoute({
 
 function Route() {
   const { subject, tasks } = subjectRoute.useLoaderData();
-
-  console.log("subject", subject);
-  console.log("tasks", tasks);
 
   return (
     <main className="container mx-auto p-8">

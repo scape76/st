@@ -670,8 +670,6 @@ CMakeFiles/academic_core.dir/src/Observer.cpp.o: \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__filesystem/recursive_directory_iterator.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__filesystem/u8path.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/iostream \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/sstream \
   /home/dan/code/st/src/../include/Task.h \
   /home/dan/code/st/src/../include/TaskState.h

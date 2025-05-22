@@ -641,8 +641,9 @@ CMakeFiles/academic_wasm.dir/src/bindings.cpp.o: \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/emscripten/em_macros.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/emscripten/val.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/emscripten/wire.h \
-  /home/dan/code/st/src/../include/GradingSystemAdapter.h \
-  /home/dan/code/st/src/../include/Task.h \
+  /home/dan/code/st/src/../include/Notification.h \
+  /home/dan/code/st/src/../include/Registry.h \
+  /home/dan/code/st/src/../include/Subject.h \
   /home/dan/code/st/src/../include/Memento.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/fstream \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/filesystem \
@@ -679,7 +680,6 @@ CMakeFiles/academic_wasm.dir/src/bindings.cpp.o: \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__filesystem/u8path.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/iostream \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/sstream \
+  /home/dan/code/st/src/../include/Task.h \
   /home/dan/code/st/src/../include/TaskState.h \
-  /home/dan/code/st/src/../include/Notification.h \
-  /home/dan/code/st/src/../include/Subject.h \
   /home/dan/code/st/src/../include/TaskBuilder.h

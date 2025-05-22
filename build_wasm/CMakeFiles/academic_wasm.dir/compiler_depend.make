@@ -678,9 +678,9 @@ CMakeFiles/academic_wasm.dir/src/bindings.cpp.o: /home/dan/code/st/src/bindings.
   /home/dan/code/emsdk/upstream/lib/clang/21/include/stdarg.h \
   /home/dan/code/emsdk/upstream/lib/clang/21/include/stddef.h \
   /home/dan/code/emsdk/upstream/lib/clang/21/include/stdint.h \
-  /home/dan/code/st/include/GradingSystemAdapter.h \
   /home/dan/code/st/include/Memento.h \
   /home/dan/code/st/include/Notification.h \
+  /home/dan/code/st/include/Registry.h \
   /home/dan/code/st/include/Subject.h \
   /home/dan/code/st/include/Task.h \
   /home/dan/code/st/include/TaskBuilder.h \
@@ -1353,6 +1353,8 @@ CMakeFiles/academic_wasm.dir/src/bindings.cpp.o: /home/dan/code/st/src/bindings.
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__algorithm/minmax.h:
 
+/home/dan/code/st/include/Registry.h:
+
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/atomic:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__type_traits/remove_reference.h:
@@ -1898,8 +1900,6 @@ CMakeFiles/academic_wasm.dir/src/bindings.cpp.o: /home/dan/code/st/src/bindings.
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__type_traits/is_trivially_relocatable.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__type_traits/copy_cvref.h:
-
-/home/dan/code/st/include/GradingSystemAdapter.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__algorithm/push_heap.h:
 

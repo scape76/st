@@ -679,9 +679,9 @@ CMakeFiles/academic_wasm.dir/src/bindings.cpp.o
  /home/dan/code/emsdk/upstream/lib/clang/21/include/stdarg.h
  /home/dan/code/emsdk/upstream/lib/clang/21/include/stddef.h
  /home/dan/code/emsdk/upstream/lib/clang/21/include/stdint.h
- /home/dan/code/st/include/GradingSystemAdapter.h
  /home/dan/code/st/include/Memento.h
  /home/dan/code/st/include/Notification.h
+ /home/dan/code/st/include/Registry.h
  /home/dan/code/st/include/Subject.h
  /home/dan/code/st/include/Task.h
  /home/dan/code/st/include/TaskBuilder.h

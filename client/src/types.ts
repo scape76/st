@@ -19,6 +19,7 @@ export type AcademicTracker = {
   createSubject: (name: string, code: string, description: string) => void;
   getAllSubjects: () => Subject[];
   getSubject: (code: string) => Subject;
+  getSubjectTasks: (subjectCode: string) => Task[];
   createTask: (
     subjectCode: string,
     title: string,
@@ -26,5 +27,4 @@ export type AcademicTracker = {
     deadline: string,
     type: LabType,
   ) => void;
-  getTasksForSubject: (subjectCode: string) => Task[];
 };

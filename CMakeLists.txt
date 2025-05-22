@@ -133,7 +133,7 @@ add_custom_command(TARGET academic_wasm POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_BINARY_DIR}/academic_tracker.js
     ${CMAKE_CURRENT_BINARY_DIR}/academic_tracker.wasm
-    ${CMAKE_CURRENT_SOURCE_DIR}/web/
+    ${CMAKE_CURRENT_SOURCE_DIR}/client/src
   COMMENT "Copying WebAssembly files to web directory"
 )
 

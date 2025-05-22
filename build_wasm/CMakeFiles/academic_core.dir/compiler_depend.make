@@ -403,7 +403,6 @@ CMakeFiles/academic_core.dir/src/CompositeTask.cpp.o: /home/dan/code/st/src/Comp
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/poll_with_backoff.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support/pthread.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/find_index.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/ignore.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/make_tuple_types.h \
@@ -596,7 +595,6 @@ CMakeFiles/academic_core.dir/src/CompositeTask.cpp.o: /home/dan/code/st/src/Comp
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/limits \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/math.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/memory \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/mutex \
@@ -2434,7 +2432,6 @@ CMakeFiles/academic_core.dir/src/Observer.cpp.o: /home/dan/code/st/src/Observer.
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/poll_with_backoff.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support/pthread.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/find_index.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/ignore.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/make_tuple_types.h \
@@ -2627,7 +2624,6 @@ CMakeFiles/academic_core.dir/src/Observer.cpp.o: /home/dan/code/st/src/Observer.
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/limits \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/math.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/memory \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/mutex \
@@ -3111,7 +3107,6 @@ CMakeFiles/academic_core.dir/src/Subject.cpp.o: /home/dan/code/st/src/Subject.cp
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/poll_with_backoff.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support/pthread.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/find_index.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/ignore.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/make_tuple_types.h \
@@ -3304,7 +3299,6 @@ CMakeFiles/academic_core.dir/src/Subject.cpp.o: /home/dan/code/st/src/Subject.cp
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/limits \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/math.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/memory \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/mutex \
@@ -4464,7 +4458,6 @@ CMakeFiles/academic_core.dir/src/TaskBuilder.cpp.o: /home/dan/code/st/src/TaskBu
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/poll_with_backoff.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support/pthread.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/find_index.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/ignore.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/make_tuple_types.h \
@@ -4657,7 +4650,6 @@ CMakeFiles/academic_core.dir/src/TaskBuilder.cpp.o: /home/dan/code/st/src/TaskBu
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/limits \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/math.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/memory \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/mutex \
@@ -5140,7 +5132,6 @@ CMakeFiles/academic_core.dir/src/TaskDecorator.cpp.o: /home/dan/code/st/src/Task
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/poll_with_backoff.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support/pthread.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/find_index.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/ignore.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/make_tuple_types.h \
@@ -5333,7 +5324,6 @@ CMakeFiles/academic_core.dir/src/TaskDecorator.cpp.o: /home/dan/code/st/src/Task
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/limits \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/math.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/memory \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/mutex \
@@ -5864,7 +5854,6 @@ CMakeFiles/academic_core.dir/src/TaskProcess.cpp.o: /home/dan/code/st/src/TaskPr
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/poll_with_backoff.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support/pthread.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/find_index.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/ignore.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/make_tuple_types.h \
@@ -6059,7 +6048,6 @@ CMakeFiles/academic_core.dir/src/TaskProcess.cpp.o: /home/dan/code/st/src/TaskPr
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/limits \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/math.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/memory \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/mutex \
@@ -6544,7 +6532,6 @@ CMakeFiles/academic_core.dir/src/TaskState.cpp.o: /home/dan/code/st/src/TaskStat
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/poll_with_backoff.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__thread/support/pthread.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/find_index.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/ignore.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tuple/make_tuple_types.h \
@@ -6737,7 +6724,6 @@ CMakeFiles/academic_core.dir/src/TaskState.cpp.o: /home/dan/code/st/src/TaskStat
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/limits \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale.h \
-  /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/math.h \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/memory \
   /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/mutex \
@@ -6880,6 +6866,8 @@ CMakeFiles/academic_core.dir/src/TaskState.cpp.o: /home/dan/code/st/src/TaskStat
 
 /home/dan/code/st/src/Notification.cpp:
 
+/home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map:
+
 /home/dan/code/st/src/GradingSystemFacade.cpp:
 
 /home/dan/code/st/include/Task.h:
@@ -6923,6 +6911,10 @@ CMakeFiles/academic_core.dir/src/TaskState.cpp.o: /home/dan/code/st/src/TaskStat
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/unistd.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/time.h:
+
+/home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree:
+
+/home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/strings.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/stdarg.h:
 
@@ -7002,8 +6994,6 @@ CMakeFiles/academic_core.dir/src/TaskState.cpp.o: /home/dan/code/st/src/TaskStat
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/math.h:
 
-/home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/map:
-
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/locale.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/wasi/api.h:
@@ -7071,8 +7061,6 @@ CMakeFiles/academic_core.dir/src/TaskState.cpp.o: /home/dan/code/st/src/TaskStat
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/is_valid_range.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/is_pointer_in_range.h:
-
-/home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/integer_sequence.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__fwd/bit_reference.h:
 
@@ -7211,10 +7199,6 @@ CMakeFiles/academic_core.dir/src/TaskState.cpp.o: /home/dan/code/st/src/TaskStat
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__memory/allocator_traits.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__ranges/empty.h:
-
-/home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/strings.h:
-
-/home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__tree:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/forward_list:
 
@@ -7479,6 +7463,8 @@ CMakeFiles/academic_core.dir/src/TaskState.cpp.o: /home/dan/code/st/src/TaskStat
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__random/random_device.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__charconv/to_chars_base_10.h:
+
+/home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/integer_sequence.h:
 
 /home/dan/code/emsdk/upstream/emscripten/cache/sysroot/include/bits/limits.h:
 
