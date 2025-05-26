@@ -1,0 +1,35 @@
+CompileFlags:
+  Add:
+    - -std=c++17
+    - --target=wasm32-unknown-emscripten
+    - --sysroot=/usr/share/emscripten/cache/sysroot
+    - -I/home/dan/code/st/include
+    - -isystem
+    - /usr/share/emscripten/cache/sysroot/include/SDL
+    - -isystem
+    - /usr/share/emscripten/cache/sysroot/include/compat
+    - -isystem
+    - /usr/share/emscripten/cache/sysroot/include/c++/v1
+    - -isystem
+    - /usr/lib/llvm-15/lib/clang/15.0.7/include
+    - -isystem
+    - /usr/share/emscripten/cache/sysroot/include
+    - -DEMSCRIPTEN
+    - -D__EMSCRIPTEN_major__=3
+    - -D__EMSCRIPTEN_minor__=1
+    - -D__EMSCRIPTEN_tiny__=6
+    - -D_LIBCPP_ABI_VERSION=2
+    - -fignore-exceptions
+    - -fvisibility=default
+    - -fno-threadsafe-statics
+    - -mllvm
+    - -combiner-global-alias-analysis=false
+    - -mllvm
+    - -enable-emscripten-sjlj
+    - -mllvm
+    - -disable-lsr
+  Remove:
+    - -I/usr/include
+    - -I/usr/include/c++
+    - -I/usr/include/x86_64-linux-gnu
+    - -I/usr/local/include
