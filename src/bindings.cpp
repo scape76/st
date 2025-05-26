@@ -32,7 +32,7 @@ val subjectToJS(const std::shared_ptr<Subject> &subject) {
       jsTask.set("title", tasks[i]->getTitle());
       jsTask.set("description", tasks[i]->getDescription());
 
-      // Convert deadline to ISO string
+      // to ISO string
       auto time = std::chrono::system_clock::to_time_t(tasks[i]->getDeadline());
       std::tm *tm = std::localtime(&time);
       char buffer[30];
@@ -59,7 +59,7 @@ val taskToJS(const std::shared_ptr<Task> &task) {
     result.set("title", task->getTitle());
     result.set("description", task->getDescription());
 
-    // Convert deadline to ISO string
+    // to ISO string
     auto time = std::chrono::system_clock::to_time_t(task->getDeadline());
     std::tm *tm = std::localtime(&time);
     char buffer[30];
@@ -75,7 +75,6 @@ val taskToJS(const std::shared_ptr<Task> &task) {
   return result;
 }
 
-// Subject management functions
 std::string createSubject(const std::string &name, const std::string &code,
                           const std::string &description) {
   auto subject = SubjectBuilder()
@@ -110,7 +109,6 @@ val getSubject(const std::string &code) {
   }
 }
 
-// Task management functions
 int createTask(const std::string &subjectCode, const std::string &title,
                const std::string &description, const std::string &deadlineStr,
                int taskType) {
@@ -123,11 +121,9 @@ int createTask(const std::string &subjectCode, const std::string &title,
       return -1;
     }
 
-    // Convert to time_point
     std::time_t time = std::mktime(&timeinfo);
     DateTime deadline = std::chrono::system_clock::from_time_t(time);
 
-    // Build the task
     TaskBuilder builder;
     builder.setTitle(title).setDescription(description).setDeadline(deadline);
 
@@ -150,7 +146,7 @@ int createTask(const std::string &subjectCode, const std::string &title,
     registry.subjects[subjectCode]->addTask(task);
 
     auto tasks = registry.subjects[subjectCode]->getTasks();
-    return tasks.size() - 1; // Return the index
+    return tasks.size() - 1;
   } catch (const std::out_of_range &e) {
     return -1;
   }
