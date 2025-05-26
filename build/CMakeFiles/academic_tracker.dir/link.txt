@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/academic_tracker.dir/src/main.cpp.o -o academic_tracker  libacademic_core.a 

@@ -2,34 +2,51 @@ CompileFlags:
   Add:
     - -std=c++17
     - --target=wasm32-unknown-emscripten
-    - --sysroot=/usr/share/emscripten/cache/sysroot
-    - -I/home/dan/code/st/include
+
+    # --- Emscripten System Root ---
+    - --sysroot=/opt/homebrew/Cellar/emscripten/4.0.9/libexec/cache/sysroot
+
+    # --- System Include Paths from Emscripten ---
     - -isystem
-    - /usr/share/emscripten/cache/sysroot/include/SDL
+    - /opt/homebrew/Cellar/emscripten/4.0.9/libexec/cache/sysroot/include/c++/v1 # For C++ standard library
     - -isystem
-    - /usr/share/emscripten/cache/sysroot/include/compat
+    - /opt/homebrew/Cellar/emscripten/4.0.9/libexec/llvm/lib/clang/21/include # Clang's built-in headers
     - -isystem
-    - /usr/share/emscripten/cache/sysroot/include/c++/v1
+    - /opt/homebrew/Cellar/emscripten/4.0.9/libexec/cache/sysroot/include # General sysroot includes
     - -isystem
-    - /usr/lib/llvm-15/lib/clang/15.0.7/include
+    - /opt/homebrew/Cellar/emscripten/4.0.9/libexec/cache/sysroot/include/fakesdl # From -Xclang -iwithsysroot
     - -isystem
-    - /usr/share/emscripten/cache/sysroot/include
+    - /opt/homebrew/Cellar/emscripten/4.0.9/libexec/cache/sysroot/include/compat  # From -Xclang -iwithsysroot
+
+    # --- Your Project Specific Includes ---
+    - -I/Users/dan/code/st/include                   # Make sure this is the correct path to YOUR project's "st/include"
+
+    # --- Standard Emscripten Defines and Other Flags from emcc output ---
     - -DEMSCRIPTEN
-    - -D__EMSCRIPTEN_major__=3
-    - -D__EMSCRIPTEN_minor__=1
-    - -D__EMSCRIPTEN_tiny__=6
-    - -D_LIBCPP_ABI_VERSION=2
+    # Based on Emscripten 4.0.9
+    - -D__EMSCRIPTEN_major__=4
+    - -D__EMSCRIPTEN_minor__=0
+    - -D__EMSCRIPTEN_tiny__=9
+    - -D_LIBCPP_ABI_VERSION=2 # This is typically used with Emscripten's libc++
+
+    # Flags emcc added:
     - -fignore-exceptions
-    - -fvisibility=default
-    - -fno-threadsafe-statics
+    - -fvisibility=default # Though emcc -v showed -fvisibility=hidden for cc1, this was in your original file and is a common default.
+                            # If you have linking issues with wasm exports, you might need to manage visibility carefully.
+    - -fno-threadsafe-statics # This was in your original, emcc doesn't add it by default but it's a common Emscripten practice
+
+    # LLVM flags emcc added:
     - -mllvm
     - -combiner-global-alias-analysis=false
     - -mllvm
     - -enable-emscripten-sjlj
     - -mllvm
     - -disable-lsr
+
   Remove:
-    - -I/usr/include
-    - -I/usr/include/c++
-    - -I/usr/include/x86_64-linux-gnu
-    - -I/usr/local/include
+    # Start with this section empty or commented out.
+    # Only add paths here if you find clangd is incorrectly picking up
+    # native macOS system headers (like those from /Library/Developer/CommandLineTools/...).
+    # For example:
+    # - -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
+    # - -I/Library/Developer/CommandLineTools/usr/lib/clang/16/include

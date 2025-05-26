@@ -15,10 +15,8 @@
 
 using namespace emscripten;
 
-// Global state variables
 Registry &registry = Registry::instance();
 
-// Helper functions to convert C++ data types to JavaScript
 val subjectToJS(const std::shared_ptr<Subject> &subject) {
   val result = val::object();
   if (subject) {
@@ -26,9 +24,9 @@ val subjectToJS(const std::shared_ptr<Subject> &subject) {
     result.set("code", subject->getCode());
     result.set("description", subject->getDescription());
 
-    // Convert tasks
     val jsTasks = val::array();
     auto tasks = subject->getTasks();
+
     for (size_t i = 0; i < tasks.size(); i++) {
       val jsTask = val::object();
       jsTask.set("title", tasks[i]->getTitle());
@@ -49,6 +47,7 @@ val subjectToJS(const std::shared_ptr<Subject> &subject) {
 
       jsTasks.set(i, jsTask);
     }
+
     result.set("tasks", jsTasks);
   }
   return result;

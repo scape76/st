@@ -1,2 +1,0 @@
-/home/dan/code/emsdk/upstream/emscripten/emar qc ../../../lib/libgmock.a "CMakeFiles/gmock.dir/src/gmock-all.cc.o"
-/home/dan/code/emsdk/upstream/emscripten/emranlib ../../../lib/libgmock.a

@@ -1,1 +1,0 @@
- libacademic_core.a lib/libgtest.a lib/libgtest_main.a -lpthread lib/libgtest.a 

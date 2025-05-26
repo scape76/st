@@ -1,2 +1,0 @@
-/usr/bin/ar qc libacademic_core.a CMakeFiles/academic_core.dir/src/CompositeTask.cpp.o CMakeFiles/academic_core.dir/src/GradingSystemFacade.cpp.o CMakeFiles/academic_core.dir/src/Notification.cpp.o CMakeFiles/academic_core.dir/src/Observer.cpp.o CMakeFiles/academic_core.dir/src/Subject.cpp.o CMakeFiles/academic_core.dir/src/Task.cpp.o CMakeFiles/academic_core.dir/src/TaskBuilder.cpp.o CMakeFiles/academic_core.dir/src/TaskDecorator.cpp.o CMakeFiles/academic_core.dir/src/TaskProcess.cpp.o CMakeFiles/academic_core.dir/src/TaskState.cpp.o
-/usr/bin/ranlib libacademic_core.a

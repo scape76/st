@@ -4,7 +4,6 @@
 #include "Memento.h"
 #include "TaskState.h"
 #include <chrono>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -27,6 +26,7 @@ private:
   int marks;
   float progress;
   std::shared_ptr<TaskState> state;
+
   friend class TaskState;
   friend class NotStartedState;
   friend class InProgressState;

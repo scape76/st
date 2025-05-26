@@ -1,8 +1,8 @@
-/home/dan/code/st/build_wasm/CMakeFiles/academic_core.dir
-/home/dan/code/st/build_wasm/CMakeFiles/academic_wasm.dir
-/home/dan/code/st/build_wasm/CMakeFiles/edit_cache.dir
-/home/dan/code/st/build_wasm/CMakeFiles/rebuild_cache.dir
-/home/dan/code/st/build_wasm/CMakeFiles/list_install_components.dir
-/home/dan/code/st/build_wasm/CMakeFiles/install.dir
-/home/dan/code/st/build_wasm/CMakeFiles/install/local.dir
-/home/dan/code/st/build_wasm/CMakeFiles/install/strip.dir
+/Users/dan/code/st/build_wasm/CMakeFiles/academic_core.dir
+/Users/dan/code/st/build_wasm/CMakeFiles/academic_wasm.dir
+/Users/dan/code/st/build_wasm/CMakeFiles/edit_cache.dir
+/Users/dan/code/st/build_wasm/CMakeFiles/rebuild_cache.dir
+/Users/dan/code/st/build_wasm/CMakeFiles/list_install_components.dir
+/Users/dan/code/st/build_wasm/CMakeFiles/install.dir
+/Users/dan/code/st/build_wasm/CMakeFiles/install/local.dir
+/Users/dan/code/st/build_wasm/CMakeFiles/install/strip.dir

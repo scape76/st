@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/dan/code/st/src/bindings.cpp" "CMakeFiles/academic_wasm.dir/src/bindings.cpp.o" "gcc" "CMakeFiles/academic_wasm.dir/src/bindings.cpp.o.d"
+  "/Users/dan/code/st/src/bindings.cpp" "CMakeFiles/academic_wasm.dir/src/bindings.cpp.o" "gcc" "CMakeFiles/academic_wasm.dir/src/bindings.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
