@@ -1,6 +1,7 @@
 #include "../include/Task.h"
 #include "../include/Notification.h"
 #include "../include/Subject.h"
+#include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -16,19 +17,6 @@ std::string formatDateTime(const DateTime &dt) {
   tm_local = *std::localtime(&time);
 #endif
 
-  std::time_t now = std::time(nullptr);
-  std::tm tm_now = {};
-
-#ifdef _WIN32
-  gmtime_s(&tm_now, &now);
-#else
-  tm_now = *std::gmtime(&now);
-#endif
-
-  std::time_t gmt = std::mktime(&tm_now);
-  std::time_t local = std::time(nullptr);
-  double diff = std::difftime(local, gmt);
-
   std::stringstream ss;
   ss << std::put_time(&tm_local, "%Y-%m-%d %H:%M");
   return ss.str();
@@ -37,10 +25,7 @@ std::string formatDateTime(const DateTime &dt) {
 Task::Task(const std::string &title, const DateTime &deadline,
            const std::string &description)
     : title(title), description(description), deadline(deadline),
-      completed(false), marks(0), progress(0.0f) {
-  state = NotStartedState::getInstance();
-  state->setContext(this);
-}
+      completed(false), marks(0), progress(0.0f), subject(nullptr) {}
 
 std::string Task::getTitle() const { return title; }
 
@@ -72,37 +57,31 @@ void Task::setSubject(std::shared_ptr<Subject> subject) {
   this->subject = subject;
 }
 
-void Task::setCompleted(bool completed) {
-  this->completed = completed;
+void Task::setCompleted(bool completed_status) {
+  this->completed = completed_status;
 
-  if (completed) {
-    state->complete(marks);
-  } else if (state->getName() == "Completed") {
-    setState(NotStartedState::getInstance());
+  if (this->completed) {
+    this->progress = 100.0f;
+  } else {
+    this->progress = 0.0f;
+    this->marks = 0;
   }
 }
 
 void Task::setMarks(int marks) { this->marks = marks; }
 
-void Task::setProgress(float progress) { this->progress = progress; }
+void Task::setProgress(float progress) {
+  if (progress < 0.0f)
+    this->progress = 0.0f;
+  else if (progress > 100.0f)
+    this->progress = 100.0f;
+  else
+    this->progress = progress;
 
-void Task::setState(std::shared_ptr<TaskState> newState) {
-  this->state = newState;
-  this->state->setContext(this);
-}
-
-std::shared_ptr<TaskState> Task::getState() const { return state; }
-
-void Task::startTask() { state->start(); }
-
-void Task::updateProgress(float percentage) { state->makeProgress(percentage); }
-
-void Task::checkDeadline() { state->checkDeadline(); }
-
-std::string Task::getStateName() const { return state->getName(); }
-
-std::string Task::getStateDescription() const {
-  return state->getDescription();
+  if (this->progress == 100.0f && !this->completed) {
+  } else if (this->progress < 100.0f && this->completed) {
+    this->completed = false;
+  }
 }
 
 void Task::addNotification(std::shared_ptr<Notification> notification) {
@@ -133,46 +112,31 @@ void Task::displayInfo() const {
     std::cout << "Not assigned to any subject" << std::endl;
   }
 
-  std::cout << "Status: " << getStateName() << std::endl;
+  std::string current_status;
+  if (completed) {
+    current_status = "Completed";
+  } else {
+    bool overdue = deadline < std::chrono::system_clock::now();
+    if (overdue) {
+      current_status = "Overdue";
+    } else if (progress > 0.0f && progress < 100.0f) {
+      current_status = "In Progress";
+    } else if (progress == 0.0f) {
+      current_status = "Not Started";
+    } else {
+      current_status = "Pending Completion";
+    }
+  }
+  std::cout << "Status: " << current_status << std::endl;
 
-  if (state->getName() == "In Progress") {
-    std::cout << "Progress: " << progress << "%" << std::endl;
-  } else if (state->getName() == "Completed") {
+  if (completed) {
     std::cout << "Marks: " << marks << std::endl;
+  } else if (progress > 0.0f) {
+    std::cout << "Progress: " << std::fixed << std::setprecision(1) << progress
+              << "%" << std::endl;
   }
 
   std::cout << "Notifications: " << notifications.size() << std::endl;
-}
-
-std::shared_ptr<TaskMemento> Task::createMemento() const {
-  std::string subjectCode = "";
-  if (auto subjectPtr = getSubject()) {
-    subjectCode = subjectPtr->getCode();
-  }
-
-  return std::make_shared<TaskMemento>(title, description, deadline, completed,
-                                       marks, progress, state->getName(),
-                                       subjectCode);
-}
-
-void Task::restoreFromMemento(const std::shared_ptr<TaskMemento> &memento) {
-  title = memento->getTitle();
-  description = memento->getDescription();
-  deadline = memento->getDeadline();
-  completed = memento->isCompleted();
-  marks = memento->getMarks();
-  progress = memento->getProgress();
-
-  std::string stateName = memento->getState();
-  if (stateName == "Not Started") {
-    setState(NotStartedState::getInstance());
-  } else if (stateName == "In Progress") {
-    setState(std::make_shared<InProgressState>(progress));
-  } else if (stateName == "Completed") {
-    setState(std::make_shared<CompletedState>(marks));
-  } else if (stateName == "Overdue") {
-    setState(std::make_shared<OverdueState>(deadline));
-  }
 }
 
 LabTask::LabTask(const std::string &title, const DateTime &deadline,

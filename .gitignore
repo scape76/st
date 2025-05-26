@@ -1,3 +1,4 @@
 build/
+build_cli/
 .cache/
 build_wasm/

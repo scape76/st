@@ -1,6 +1,7 @@
 #ifndef REGISTRY_H
 #define REGISTRY_H
 
+#include "Internship.h"
 #include "Subject.h"
 #include <memory>
 #include <string>
@@ -8,6 +9,7 @@
 
 struct Registry {
   std::unordered_map<std::string, std::shared_ptr<Subject>> subjects;
+  std::unordered_map<std::string, std::shared_ptr<Internship>> internships;
 
   static Registry &instance() {
     static Registry s;

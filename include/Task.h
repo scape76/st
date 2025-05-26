@@ -1,8 +1,6 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include "Memento.h"
-#include "TaskState.h"
 #include <chrono>
 #include <memory>
 #include <string>
@@ -10,8 +8,6 @@
 
 class Subject;
 class Notification;
-class TaskState;
-class TaskMemento;
 
 using DateTime = std::chrono::system_clock::time_point;
 
@@ -25,27 +21,12 @@ private:
   bool completed;
   int marks;
   float progress;
-  std::shared_ptr<TaskState> state;
-
-  friend class TaskState;
-  friend class NotStartedState;
-  friend class InProgressState;
-  friend class CompletedState;
-  friend class OverdueState;
 
 public:
   Task(const std::string &title, const DateTime &deadline,
        const std::string &description = "");
 
   virtual ~Task() = default;
-
-  void setState(std::shared_ptr<TaskState> state);
-  std::shared_ptr<TaskState> getState() const;
-  void startTask();
-  void updateProgress(float percentage);
-  void checkDeadline();
-  std::string getStateName() const;
-  std::string getStateDescription() const;
 
   virtual std::string getTitle() const;
   virtual std::string getDescription() const;
@@ -70,9 +51,6 @@ public:
   virtual void displayInfo() const;
 
   virtual std::string getType() const = 0;
-
-  std::shared_ptr<TaskMemento> createMemento() const;
-  void restoreFromMemento(const std::shared_ptr<TaskMemento> &memento);
 };
 
 class LabTask : public Task {
