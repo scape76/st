@@ -1,6 +1,8 @@
 #ifndef SUBJECT_H
 #define SUBJECT_H
 
+#include "PerformanceVisitable.h"
+#include "PerformanceVisitor.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -9,7 +11,7 @@ class Task;
 
 class SubjectBuilder;
 
-class Subject {
+class Subject : public PerformanceVisitable {
 private:
   std::string name;
   std::string code;
@@ -32,6 +34,8 @@ public:
   std::shared_ptr<Task> findTask(const std::string &title) const;
 
   void displayInfo() const;
+
+  double accept(PerformanceVisitor &visitor) override;
 };
 
 class SubjectBuilder {

@@ -16,8 +16,6 @@
 #include "../include/Subject.h"
 #include "../include/Task.h"
 #include "../include/TaskBuilder.h"
-#include "../include/TaskDecorator.h"
-#include "../include/TaskProcess.h"
 #include "Internship.h"
 #include "ShortcodeExpanderDecorator.h"
 
