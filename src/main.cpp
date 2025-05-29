@@ -9,15 +9,18 @@
 #include <vector>
 
 #include "../include/CachingHtmlProviderProxy.h"
+#include "../include/CommandManager.h"
 #include "../include/HtmlProvider.h"
 #include "../include/Notification.h"
 #include "../include/Observer.h"
 #include "../include/PerformanceStrategy.h"
 #include "../include/ProfilePerformanceCalculator.h"
 #include "../include/Registry.h"
+#include "../include/SetTaskStateCommand.h"
 #include "../include/Subject.h"
 #include "../include/Task.h"
 #include "../include/TaskBuilder.h"
+#include "../include/TaskState.h"
 #include "Internship.h"
 #include "ShortcodeExpanderDecorator.h"
 
@@ -34,18 +37,14 @@ void populateRegistry() {
                   .setCode("MATH101")
                   .setDescription("Fundamental concepts of mathematics.")
                   .build();
-
   auto cs = subjectBuilder.setName("Computer Science")
                 .setCode("CS101")
                 .setDescription("Introduction to programming and algorithms.")
                 .build();
-
   auto physics = subjectBuilder.setName("Physics")
                      .setCode("PHYS101")
                      .setDescription("Classical mechanics and thermodynamics.")
                      .build();
-
-  TaskBuilder taskBuilder;
 
   LabFactory labFactory;
   ProjectFactory projectFactory;
@@ -58,69 +57,63 @@ void populateRegistry() {
 
   auto math_lab1 = labFactory.createTask("Lab 1: Algebra", deadline_past,
                                          "Basic algebraic manipulations");
-  math_lab1->setCompleted(true);
+  math_lab1->completeTask();
   math_lab1->setMarks(90);
-  math_lab1->setProgress(100.0f);
   math_lab1->setSubject(math);
   math->addTask(math_lab1);
 
   auto math_exam = examFactory.createTask("Midterm Exam", deadline_soon,
                                           "Covers first half of the course");
-  math_exam->setCompleted(false);
-  math_exam->setMarks(0);
-  math_exam->setProgress(30.0f);
+  math_exam->startTask();
   math_exam->setSubject(math);
   math->addTask(math_exam);
 
   auto cs_project = projectFactory.createTask(
       "Project: Web App", deadline_future, "Develop a simple web application");
-  cs_project->setCompleted(false);
-  cs_project->setMarks(0);
-  cs_project->setProgress(15.0f);
+  cs_project->startTask();
   cs_project->setSubject(cs);
   cs->addTask(cs_project);
 
   auto cs_lab1 = labFactory.createTask("Lab 1: Python Basics", deadline_past,
                                        "Introduction to Python syntax");
-  cs_lab1->setCompleted(true);
+  cs_lab1->completeTask();
   cs_lab1->setMarks(95);
-  cs_lab1->setProgress(100.0f);
   cs_lab1->setSubject(cs);
   cs->addTask(cs_lab1);
 
   auto cs_lab2 = labFactory.createTask("Lab 2: Data Structures", deadline_soon,
                                        "Implement lists and dictionaries");
-  cs_lab2->setCompleted(true);
+  cs_lab2->completeTask();
   cs_lab2->setMarks(88);
-  cs_lab2->setProgress(100.0f);
   cs_lab2->setSubject(cs);
   cs->addTask(cs_lab2);
 
   auto physics_lab = labFactory.createTask("Lab: Kinematics", deadline_soon,
                                            "Experiments on motion");
-  physics_lab->setCompleted(false);
-  physics_lab->setProgress(50.0f);
+  physics_lab->startTask();
   physics_lab->setSubject(physics);
   physics->addTask(physics_lab);
 
   auto physics_exam = examFactory.createTask(
       "Final Exam", deadline_future, "Comprehensive exam on all topics");
-  physics_exam->setCompleted(false);
-  physics_exam->setProgress(5.0f);
+  physics_exam->startTask();
   physics_exam->setSubject(physics);
   physics->addTask(physics_exam);
 
   registry.subjects[math->getCode()] = math;
   registry.subjects[cs->getCode()] = cs;
   registry.subjects[physics->getCode()] = physics;
-}
 
+  std::cout << "Registry populated with initial data." << std::endl;
+}
 void adapters();
 void performancePatterns();
+void taskStateAndCommands();
 
 int main() {
   populateRegistry();
   performancePatterns();
+  // taskStateAndCommands();
 
   return 0;
 }
@@ -225,4 +218,72 @@ void performancePatterns() {
             << overallAvgProgress << "%" << std::endl;
 
   std::cout << "\n--- End of Performance Patterns Test ---" << std::endl;
+}
+
+void taskStateAndCommands() {
+  std::cout << "\n--- Demonstrating Task State and Command Patterns ---"
+            << std::endl;
+  auto &registry = Registry::instance();
+
+  if (registry.subjects.find("CS101") == registry.subjects.end()) {
+    std::cout << "CS101 subject not found. Aborting demonstration."
+              << std::endl;
+    return;
+  }
+  auto cs_subject = registry.subjects["CS101"];
+  std::shared_ptr<Task> csProject = nullptr;
+  for (const auto &task : cs_subject->getTasks()) {
+    if (task->getTitle() == "Project: Web App") {
+      csProject = task;
+      break;
+    }
+  }
+
+  if (!csProject) {
+    std::cout << "CS Project task ('Project: Web App') not found. Aborting "
+                 "demonstration."
+              << std::endl;
+    return;
+  }
+
+  CommandManager &cmdManager = CommandManager::instance();
+
+  std::cout << "\nInitial Task Info (CS Project):" << std::endl;
+  csProject->displayInfo();
+  std::cout << "-------------------------------------" << std::endl;
+
+  auto cmdStartTask = std::make_shared<SetTaskStateCommand>(
+      *csProject, std::make_shared<InProgressState>());
+  std::cout << "\nExecuting Command: Start Task (Target: InProgressState)"
+            << std::endl;
+  cmdManager.executeCommand(cmdStartTask);
+  csProject->displayInfo();
+  std::cout << "-------------------------------------" << std::endl;
+
+  auto cmdMarkCompleted = std::make_shared<SetTaskStateCommand>(
+      *csProject, std::make_shared<CompletedState>());
+  std::cout << "\nExecuting Command: Mark as Completed (Target: CompletedState)"
+            << std::endl;
+  cmdManager.executeCommand(cmdMarkCompleted);
+  csProject->setMarks(92);
+  csProject->displayInfo();
+  std::cout << "-------------------------------------" << std::endl;
+
+  std::cout << "\nUndoing last command (Mark Completed):" << std::endl;
+  cmdManager.undoLastCommand();
+  csProject->displayInfo();
+  std::cout << "-------------------------------------" << std::endl;
+
+  std::cout << "\nUndoing previous command (Start Task):" << std::endl;
+  cmdManager.undoLastCommand();
+  csProject->displayInfo();
+  std::cout << "-------------------------------------" << std::endl;
+
+  std::cout << "\nAttempting to undo with no commands in history:" << std::endl;
+  cmdManager.undoLastCommand();
+  csProject->displayInfo();
+  std::cout << "-------------------------------------" << std::endl;
+
+  std::cout << "\n--- End of Task State and Command Demonstration ---"
+            << std::endl;
 }

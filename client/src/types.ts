@@ -14,25 +14,27 @@ export type InternshipStatusString =
 // 0: PENDING, 1: STARTED, 2: ENDED, 3: CANCELLED
 export type InternshipStatusInt = 0 | 1 | 2 | 3;
 
-type LabType = "lab" | "exam" | "project";
+type LabType = "Lab" | "Exam" | "Project";
 
-type Task = {
+export type Task = {
   title: string;
   description: string;
   deadline: string;
   type: LabType;
   completed: boolean;
   marks: number;
+  progress: number;
+  stateName: "Pending" | "In Progress" | "Completed";
 };
 
-type Resume = {
+export type Resume = {
   id: string;
   title: string;
 
   body: string;
 };
 
-type Internship = {
+export type Internship = {
   id: string;
   company: string;
   position: string;
@@ -53,7 +55,7 @@ export type AcademicTracker = {
     title: string,
     description: string,
     deadline: string,
-    type: LabType,
+    type: number,
   ) => void;
 
   convertMarkdownToHtml: (markdown: string) => string;
@@ -70,4 +72,12 @@ export type AcademicTracker = {
     endDate: string,
   ) => string;
   getAllInternships: () => Internship[];
+
+  changeTaskState: (
+    subjectCode: string,
+    taskIndex: number,
+    newState: number,
+  ) => void;
+
+  undoLastTaskCommand: () => void;
 };

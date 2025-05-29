@@ -9,15 +9,19 @@
 #include <unordered_map>
 #include <vector>
 
+#include "../include/Command.h"
+#include "../include/CommandManager.h"
 #include "../include/HtmlProvider.h"
 #include "../include/Internship.h"
 #include "../include/MarkdownParser.h"
 #include "../include/Notification.h"
 #include "../include/Registry.h"
+#include "../include/SetTaskStateCommand.h"
 #include "../include/ShortcodeExpanderDecorator.h"
 #include "../include/Subject.h"
 #include "../include/Task.h"
 #include "../include/TaskBuilder.h"
+#include "../include/TaskState.h"
 
 using namespace emscripten;
 
@@ -36,18 +40,14 @@ void seed() {
                   .setCode("MATH101")
                   .setDescription("Fundamental concepts of mathematics.")
                   .build();
-
   auto cs = subjectBuilder.setName("Computer Science")
                 .setCode("CS101")
                 .setDescription("Introduction to programming and algorithms.")
                 .build();
-
   auto physics = subjectBuilder.setName("Physics")
                      .setCode("PHYS101")
                      .setDescription("Classical mechanics and thermodynamics.")
                      .build();
-
-  TaskBuilder taskBuilder;
 
   LabFactory labFactory;
   ProjectFactory projectFactory;
@@ -60,60 +60,54 @@ void seed() {
 
   auto math_lab1 = labFactory.createTask("Lab 1: Algebra", deadline_past,
                                          "Basic algebraic manipulations");
-  math_lab1->setCompleted(true);
+  math_lab1->completeTask();
   math_lab1->setMarks(90);
-  math_lab1->setProgress(100.0f);
   math_lab1->setSubject(math);
   math->addTask(math_lab1);
 
   auto math_exam = examFactory.createTask("Midterm Exam", deadline_soon,
                                           "Covers first half of the course");
-  math_exam->setCompleted(false);
-  math_exam->setMarks(0);
-  math_exam->setProgress(30.0f);
+  math_exam->startTask();
   math_exam->setSubject(math);
   math->addTask(math_exam);
 
   auto cs_project = projectFactory.createTask(
       "Project: Web App", deadline_future, "Develop a simple web application");
-  cs_project->setCompleted(false);
-  cs_project->setMarks(0);
-  cs_project->setProgress(15.0f);
+  cs_project->startTask();
   cs_project->setSubject(cs);
   cs->addTask(cs_project);
 
   auto cs_lab1 = labFactory.createTask("Lab 1: Python Basics", deadline_past,
                                        "Introduction to Python syntax");
-  cs_lab1->setCompleted(true);
+  cs_lab1->completeTask();
   cs_lab1->setMarks(95);
-  cs_lab1->setProgress(100.0f);
   cs_lab1->setSubject(cs);
   cs->addTask(cs_lab1);
 
   auto cs_lab2 = labFactory.createTask("Lab 2: Data Structures", deadline_soon,
                                        "Implement lists and dictionaries");
-  cs_lab2->setCompleted(true);
+  cs_lab2->completeTask();
   cs_lab2->setMarks(88);
-  cs_lab2->setProgress(100.0f);
   cs_lab2->setSubject(cs);
   cs->addTask(cs_lab2);
 
   auto physics_lab = labFactory.createTask("Lab: Kinematics", deadline_soon,
                                            "Experiments on motion");
-  physics_lab->setCompleted(false);
-  physics_lab->setProgress(50.0f);
+  physics_lab->startTask();
   physics_lab->setSubject(physics);
   physics->addTask(physics_lab);
 
   auto physics_exam = examFactory.createTask(
       "Final Exam", deadline_future, "Comprehensive exam on all topics");
-  physics_exam->setCompleted(false);
-  physics_exam->setProgress(5.0f);
+  physics_exam->startTask();
   physics_exam->setSubject(physics);
   physics->addTask(physics_exam);
 
   registry.subjects[math->getCode()] = math;
   registry.subjects[cs->getCode()] = cs;
+  registry.subjects[physics->getCode()] = physics;
+
+  std::cout << "Registry populated with initial data." << std::endl;
   registry.subjects[physics->getCode()] = physics;
 }
 
@@ -132,6 +126,19 @@ InternshipStatus internshipStatusFromInt(int statusInt) {
   }
 }
 
+std::shared_ptr<TaskState> getTargetStateFromInt(int targetStateInt) {
+  switch (targetStateInt) {
+  case 0:
+    return std::make_shared<PendingState>();
+  case 1:
+    return std::make_shared<InProgressState>();
+  case 2:
+    return std::make_shared<CompletedState>();
+  default:
+    return nullptr;
+  }
+}
+
 val internshipToJS(const std::shared_ptr<Internship> &internship) {
   val jsInternship = val::object();
   if (internship) {
@@ -145,6 +152,38 @@ val internshipToJS(const std::shared_ptr<Internship> &internship) {
   return jsInternship;
 }
 
+val taskToJS(const std::shared_ptr<Task> &task) {
+  val result = val::object();
+  if (task) {
+    result.set("title", task->getTitle());
+    result.set("description", task->getDescription());
+
+    auto time_point = task->getDeadline();
+    auto c_time_t =
+        std::chrono::system_clock::to_time_t(time_point); // Convert to time_t
+    std::tm tm_local = {};
+#ifdef _WIN32
+    localtime_s(&tm_local, &c_time_t);
+#else
+    localtime_r(&c_time_t, &tm_local);
+#endif
+
+    char buffer[32];
+    if (std::strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%S", &tm_local)) {
+      result.set("deadline", std::string(buffer));
+    } else {
+      result.set("deadline", "Error formatting date");
+    }
+
+    result.set("type", task->getType());
+    result.set("completed", task->isCompleted());
+    result.set("marks", task->getMarks());
+    result.set("progress", task->getProgress());
+    result.set("stateName", task->getStateName());
+  }
+  return result;
+}
+
 val subjectToJS(const std::shared_ptr<Subject> &subject) {
   val result = val::object();
   if (subject) {
@@ -155,50 +194,10 @@ val subjectToJS(const std::shared_ptr<Subject> &subject) {
     val jsTasks = val::array();
     auto tasks = subject->getTasks();
 
-    for (size_t i = 0; i < tasks.size(); i++) {
-      val jsTask = val::object();
-      jsTask.set("title", tasks[i]->getTitle());
-      jsTask.set("description", tasks[i]->getDescription());
-
-      // to ISO string
-      auto time = std::chrono::system_clock::to_time_t(tasks[i]->getDeadline());
-      std::tm *tm = std::localtime(&time);
-      char buffer[30];
-      std::strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%S", tm);
-      jsTask.set("deadline", std::string(buffer));
-
-      jsTask.set("type", tasks[i]->getType());
-      jsTask.set("completed", tasks[i]->isCompleted());
-      jsTask.set("marks", tasks[i]->getMarks());
-      jsTask.set("progress", tasks[i]->getProgress());
-      // jsTask.set("stateName", tasks[i]->getStateName());
-
-      jsTasks.set(i, jsTask);
+    for (size_t i = 0; i < tasks.size(); ++i) {
+      jsTasks.set(i, taskToJS(tasks[i]));
     }
-
     result.set("tasks", jsTasks);
-  }
-  return result;
-}
-
-val taskToJS(const std::shared_ptr<Task> &task) {
-  val result = val::object();
-  if (task) {
-    result.set("title", task->getTitle());
-    result.set("description", task->getDescription());
-
-    // to ISO string
-    auto time = std::chrono::system_clock::to_time_t(task->getDeadline());
-    std::tm *tm = std::localtime(&time);
-    char buffer[30];
-    std::strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%S", tm);
-    result.set("deadline", std::string(buffer));
-
-    result.set("type", task->getType());
-    result.set("completed", task->isCompleted());
-    result.set("marks", task->getMarks());
-    result.set("progress", task->getProgress());
-    // result.set("stateName", task->getStateName());
   }
   return result;
 }
@@ -404,6 +403,63 @@ val getAllStoredInternships() {
   return jsInternshipsArray;
 }
 
+bool changeTaskState(const std::string &subjectCode, int taskIndex,
+                     int targetStateInt) {
+  try {
+    auto subjectIt = registry.subjects.find(subjectCode);
+    if (subjectIt == registry.subjects.end()) {
+      std::cout << "Error: Subject with code '" << subjectCode << "' not found."
+                << std::endl;
+      return false;
+    }
+    std::shared_ptr<Subject> subject = subjectIt->second;
+
+    auto tasksVec = subject->getTasks();
+
+    if (taskIndex < 0 || static_cast<size_t>(taskIndex) >= tasksVec.size()) {
+      std::cout << "Error: Invalid task index " << taskIndex << " for subject '"
+                << subjectCode << "'. Max index: " << (tasksVec.size() - 1)
+                << std::endl;
+      return false;
+    }
+
+    Task &taskToChange = *tasksVec[static_cast<size_t>(taskIndex)];
+
+    std::shared_ptr<TaskState> targetState =
+        getTargetStateFromInt(targetStateInt);
+    if (!targetState) {
+      return false;
+    }
+
+    auto command =
+        std::make_shared<SetTaskStateCommand>(taskToChange, targetState);
+    CommandManager::instance().executeCommand(command);
+    return true;
+
+  } catch (const std::out_of_range &oor) {
+    std::cout << "Error: Subject or Task not found (out_of_range): "
+              << oor.what() << std::endl;
+    return false;
+  } catch (const std::exception &e) {
+    std::cout << "Error changing task state: " << e.what() << std::endl;
+    return false;
+  } catch (...) {
+    std::cout << "An unknown error occurred while changing task state."
+              << std::endl;
+    return false;
+  }
+}
+
+bool undoLastTaskCommand() {
+  if (CommandManager::instance().canUndo()) {
+    CommandManager::instance().undoLastCommand();
+    return true;
+  }
+  emscripten::val::global("console").call<void>(
+      "log", std::string("No command to undo."));
+  return false;
+}
+
 EMSCRIPTEN_BINDINGS(academic_progress_tracker) {
   function("seed", &seed);
 
@@ -423,4 +479,7 @@ EMSCRIPTEN_BINDINGS(academic_progress_tracker) {
 
   function("createInternship", &createNewInternship);
   function("getAllInternships", &getAllStoredInternships);
+
+  function("changeTaskState", &changeTaskState);
+  function("undoLastTaskCommand", &undoLastTaskCommand);
 }

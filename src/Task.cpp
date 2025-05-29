@@ -1,6 +1,7 @@
 #include "../include/Task.h"
 #include "../include/Notification.h"
 #include "../include/Subject.h"
+#include "../include/TaskState.h"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -24,119 +25,116 @@ std::string formatDateTime(const DateTime &dt) {
 
 Task::Task(const std::string &title, const DateTime &deadline,
            const std::string &description)
-    : title(title), description(description), deadline(deadline),
-      completed(false), marks(0), progress(0.0f), subject(nullptr) {}
+    : title_(title), description_(description), deadline_(deadline), marks_(0),
+      subject_(nullptr) {
+  setState(std::make_shared<PendingState>());
+}
 
-std::string Task::getTitle() const { return title; }
+void Task::setState(std::shared_ptr<TaskState> newState) { state_ = newState; }
 
-std::string Task::getDescription() const { return description; }
+std::shared_ptr<TaskState> Task::getState() const { return state_; }
 
-DateTime Task::getDeadline() const { return deadline; }
+std::string Task::getTitle() const { return title_; }
+std::string Task::getDescription() const { return description_; }
+DateTime Task::getDeadline() const { return deadline_; }
+std::shared_ptr<Subject> Task::getSubject() const { return subject_; }
 
-std::shared_ptr<Subject> Task::getSubject() const { return subject; }
+std::string Task::getStateName() const {
+  if (state_) {
+    return state_->getName();
+  }
+  return "None";
+}
 
 std::vector<std::shared_ptr<Notification>> Task::getNotifications() const {
-  return notifications;
+  return notifications_;
 }
 
-bool Task::isCompleted() const { return completed; }
+int Task::getMarks() const { return marks_; }
 
-int Task::getMarks() const { return marks; }
+bool Task::isCompleted() const { return state_ ? state_->isFinished() : false; }
 
-float Task::getProgress() const { return progress; }
+float Task::getProgress() const {
+  return state_ ? state_->getConceptualProgress() : 0.0f;
+}
 
-void Task::setTitle(const std::string &title) { this->title = title; }
+void Task::setTitle(const std::string &title) { this->title_ = title; }
 
 void Task::setDescription(const std::string &description) {
-  this->description = description;
+  this->description_ = description;
 }
-
-void Task::setDeadline(const DateTime &deadline) { this->deadline = deadline; }
+void Task::setDeadline(const DateTime &deadline) { this->deadline_ = deadline; }
 
 void Task::setSubject(std::shared_ptr<Subject> subject) {
-  this->subject = subject;
+  this->subject_ = subject;
 }
 
-void Task::setCompleted(bool completed_status) {
-  this->completed = completed_status;
-
-  if (this->completed) {
-    this->progress = 100.0f;
+void Task::setMarks(int marks) {
+  if (isCompleted()) {
+    this->marks_ = marks;
   } else {
-    this->progress = 0.0f;
-    this->marks = 0;
+    this->marks_ = 0;
   }
 }
 
-void Task::setMarks(int marks) { this->marks = marks; }
-
-void Task::setProgress(float progress) {
-  if (progress < 0.0f)
-    this->progress = 0.0f;
-  else if (progress > 100.0f)
-    this->progress = 100.0f;
-  else
-    this->progress = progress;
-
-  if (this->progress == 100.0f && !this->completed) {
-  } else if (this->progress < 100.0f && this->completed) {
-    this->completed = false;
-  }
+void Task::startTask() {
+  if (state_)
+    state_->start(*this);
+}
+void Task::completeTask() {
+  if (state_)
+    state_->complete(*this);
+}
+void Task::reopenTask() {
+  if (state_)
+    state_->reopen(*this);
 }
 
 void Task::addNotification(std::shared_ptr<Notification> notification) {
-  notifications.push_back(notification);
+  notifications_.push_back(notification);
 }
 
 void Task::removeNotification(size_t index) {
-  if (index < notifications.size()) {
-    notifications.erase(notifications.begin() + index);
+  if (index < notifications_.size()) {
+    notifications_.erase(notifications_.begin() + index);
   } else {
-    std::cout << "Invalid notification index." << std::endl;
+    std::cout << "Invalid notification index for removal." << std::endl;
   }
 }
 
 void Task::displayInfo() const {
-  std::cout << "Task: " << title << " (" << getType() << ")" << std::endl;
+  std::cout << "Task: " << getTitle() << " (" << getType() << ")" << std::endl;
 
-  if (!description.empty()) {
-    std::cout << "Description: " << description << std::endl;
+  if (!getDescription().empty()) {
+    std::cout << "Description: " << getDescription() << std::endl;
   }
 
-  std::cout << "Deadline: " << formatDateTime(deadline) << std::endl;
+  std::cout << "Deadline: " << formatDateTime(getDeadline()) << std::endl;
 
-  if (subject) {
-    std::cout << "Subject: " << subject->getName() << " (" << subject->getCode()
-              << ")" << std::endl;
+  if (getSubject()) {
+    std::cout << "Subject: " << getSubject()->getName() << " ("
+              << getSubject()->getCode() << ")" << std::endl;
   } else {
     std::cout << "Not assigned to any subject" << std::endl;
   }
 
-  std::string current_status;
-  if (completed) {
-    current_status = "Completed";
-  } else {
-    bool overdue = deadline < std::chrono::system_clock::now();
-    if (overdue) {
-      current_status = "Overdue";
-    } else if (progress > 0.0f && progress < 100.0f) {
-      current_status = "In Progress";
-    } else if (progress == 0.0f) {
-      current_status = "Not Started";
-    } else {
-      current_status = "Pending Completion";
-    }
-  }
-  std::cout << "Status: " << current_status << std::endl;
+  // Use getStateName() for status
+  std::cout << "Status: " << getStateName() << std::endl;
 
-  if (completed) {
-    std::cout << "Marks: " << marks << std::endl;
-  } else if (progress > 0.0f) {
-    std::cout << "Progress: " << std::fixed << std::setprecision(1) << progress
-              << "%" << std::endl;
+  // Display conceptual progress from the state
+  // You can choose not to display 50% for "In Progress" if it's not meaningful
+  // and just rely on the state name.
+  if (getStateName() == "In Progress" ||
+      isCompleted()) { // Show progress if In Progress or Completed
+    std::cout << "Progress: " << std::fixed << std::setprecision(1)
+              << getProgress() << "%" << std::endl;
   }
 
-  std::cout << "Notifications: " << notifications.size() << std::endl;
+  if (isCompleted()) { // Use isCompleted() which checks the state
+    std::cout << "Marks: " << getMarks() << std::endl;
+  }
+
+  std::cout << "Notifications: " << getNotifications().size() << std::endl;
 }
 
 LabTask::LabTask(const std::string &title, const DateTime &deadline,

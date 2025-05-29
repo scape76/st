@@ -1,8 +1,7 @@
 import { createRoute, Link, useRouter } from "@tanstack/react-router";
 import { rootRoute } from "./root";
-import { PlusIcon } from "lucide-react";
 
-import { KanbanDynamicOverlayDemo } from "@/components/SubjectTasks";
+import { SubjectTasks } from "@/components/SubjectTasks";
 
 import {
   Breadcrumb,
@@ -12,26 +11,15 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { useState } from "react";
-import { useForm } from "@tanstack/react-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
+import { CreateTaskDialog } from "@/components/CreateTaskDialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { UndoIcon } from "lucide-react";
 
 const subjectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/subject/$code",
   loader: ({ context, params }) => {
-    console.log("params ", params);
     const subject = context.at.getSubject(params.code);
     const tasks = context.at.getSubjectTasks(params.code);
 
@@ -41,11 +29,17 @@ const subjectRoute = createRoute({
     };
   },
   component: Route,
+  remountDeps: ({}) => [],
   notFoundComponent: () => "not Found!!",
 });
 
 function Route() {
+  const router = useRouter();
+
   const { subject, tasks } = subjectRoute.useLoaderData();
+  const at = subjectRoute.useRouteContext({
+    select: (c) => c.at,
+  });
 
   return (
     <main className="container mx-auto p-8">
@@ -63,106 +57,25 @@ function Route() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <CreateTaskDialog />
-      </div>
-      <KanbanDynamicOverlayDemo />
-    </main>
-  );
-}
-
-function CreateTaskDialog() {
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
-
-  const at = subjectRoute.useRouteContext({
-    select: (c) => c.at,
-  });
-
-  const form = useForm({
-    defaultValues: {
-      name: "",
-      code: "",
-      description: "",
-    },
-    onSubmit: ({ value }) => {
-      console.log("value is ", value);
-      at.createSubject(value.name, value.code, value.description);
-      router.invalidate({
-        filter: (c) => c.fullPath === "/",
-      });
-      setOpen(false);
-    },
-  });
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <PlusIcon />
-          Додати Завдання
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Нове Завдання</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Назва
-            </Label>
-            <form.Field
-              name="name"
-              children={(field) => (
-                <Input
-                  id={field.name}
-                  value={field.state.value}
-                  className="col-span-3"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="code" className="text-right">
-              Код
-            </Label>
-            <form.Field
-              name="code"
-              children={(field) => (
-                <Input
-                  id={field.name}
-                  value={field.state.value}
-                  className="col-span-3"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="code" className="text-right">
-              Опис
-            </Label>
-            <form.Field
-              name="description"
-              children={(field) => (
-                <Textarea
-                  id={field.name}
-                  value={field.state.value}
-                  className="col-span-3"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              )}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" onClick={form.handleSubmit}>
-            Зберегти
+        <div className="flex items-center gap-2">
+          <Button
+            variant={"ghost"}
+            onClick={() => {
+              at.undoLastTaskCommand();
+              router.invalidate();
+            }}
+          >
+            <UndoIcon />
+            Undo
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <CreateTaskDialog />
+        </div>
+      </div>
+      <SubjectTasks
+        tasks={tasks}
+        key={tasks.map((t, i) => `${i}${t.stateName}`).join()}
+      />
+    </main>
   );
 }
 

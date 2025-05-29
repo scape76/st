@@ -8,19 +8,19 @@
 
 class Subject;
 class Notification;
+class TaskState;
 
 using DateTime = std::chrono::system_clock::time_point;
 
 class Task {
 private:
-  std::string title;
-  std::string description;
-  DateTime deadline;
-  std::shared_ptr<Subject> subject;
-  std::vector<std::shared_ptr<Notification>> notifications;
-  bool completed;
-  int marks;
-  float progress;
+  std::string title_;
+  std::string description_;
+  DateTime deadline_;
+  std::shared_ptr<Subject> subject_;
+  std::vector<std::shared_ptr<Notification>> notifications_;
+  int marks_;
+  std::shared_ptr<TaskState> state_;
 
 public:
   Task(const std::string &title, const DateTime &deadline,
@@ -28,29 +28,39 @@ public:
 
   virtual ~Task() = default;
 
-  virtual std::string getTitle() const;
-  virtual std::string getDescription() const;
-  virtual DateTime getDeadline() const;
-  virtual std::shared_ptr<Subject> getSubject() const;
-  virtual std::vector<std::shared_ptr<Notification>> getNotifications() const;
-  virtual bool isCompleted() const;
-  virtual int getMarks() const;
-  virtual float getProgress() const;
+  void setState(std::shared_ptr<TaskState> newState);
+  std::shared_ptr<TaskState> getState() const;
 
-  virtual void setTitle(const std::string &title);
-  virtual void setDescription(const std::string &description);
-  virtual void setDeadline(const DateTime &deadline);
-  virtual void setSubject(std::shared_ptr<Subject> subject);
-  virtual void setCompleted(bool completed);
-  virtual void setMarks(int marks);
-  virtual void setProgress(float progress);
+  std::string getTitle() const;
+  std::string getDescription() const;
+  DateTime getDeadline() const;
+  std::shared_ptr<Subject> getSubject() const;
+  std::vector<std::shared_ptr<Notification>> getNotifications() const;
+  int getMarks() const;
 
-  virtual void addNotification(std::shared_ptr<Notification> notification);
-  virtual void removeNotification(size_t index);
+  bool isCompleted() const;
+  float getProgress() const;
+  std::string getStateName() const;
+
+  void setTitle(const std::string &title);
+  void setDescription(const std::string &description);
+  void setDeadline(const DateTime &deadline);
+  void setSubject(std::shared_ptr<Subject> subject);
+  void setMarks(int marks);
+
+  void startTask();
+  void completeTask();
+  void reopenTask();
+
+  void addNotification(std::shared_ptr<Notification> notification);
+  void removeNotification(size_t index);
 
   virtual void displayInfo() const;
-
   virtual std::string getType() const = 0;
+
+  friend class PendingState;
+  friend class InProgressState;
+  friend class CompletedState;
 };
 
 class LabTask : public Task {
