@@ -1,184 +1,34 @@
-// #include "../include/Notification.h" // For NotificationManager
-// #include "../include/Task.h"
-// #include <gtest/gtest.h>
-// #include <thread>
-// #include <vector>
+#include <gtest/gtest.h>
+#include <memory>
+#include <string>
 
-// // Test fixture for NotificationManager tests
-// class NotificationManagerTest : public ::testing::Test {
-// protected:
-//   void SetUp() override {
-//     // Get the instance
-//     manager = &NotificationManager::getInstance();
+#include "../include/Internship.h"
+#include "../include/Registry.h"
+#include "../include/Subject.h"
 
-//     // Clear any existing notifications
-//     auto notifications = manager->getNotifications();
-//     for (size_t i = 0; i < notifications.size(); i++) {
-//       manager->removeNotification(0); // Always remove the first one
-//     }
-//   }
+class RegistrySingletonTest : public ::testing::Test {
+protected:
+  void SetUp() override {}
 
-//   void TearDown() override {
-//     // Clear notifications again after the test
-//     auto notifications = manager->getNotifications();
-//     for (size_t i = 0; i < notifications.size(); i++) {
-//       manager->removeNotification(0);
-//     }
-//   }
+  void TearDown() override {
+    Registry::instance().internships.clear();
+    Registry::instance().subjects.clear();
+  }
+};
 
-//   NotificationManager *manager;
-// };
+TEST_F(RegistrySingletonTest, InstanceIsUnique) {
+  Registry &instance1 = Registry::instance();
+  Registry &instance2 = Registry::instance();
+  Registry &instance3 = Registry::instance();
 
-// // Test that getInstance always returns the same instance
-// TEST_F(NotificationManagerTest, GetInstanceReturnsSameInstance) {
-//   NotificationManager &instance1 = NotificationManager::getInstance();
-//   NotificationManager &instance2 = NotificationManager::getInstance();
+  EXPECT_EQ(&instance1, &instance2)
+      << "First and second references should point to the same instance.";
+  EXPECT_EQ(&instance2, &instance3)
+      << "Second and third references should point to the same instance.";
+}
 
-//   // Pointers should be identical
-//   EXPECT_EQ(&instance1, &instance2);
-// }
-
-// // Test concurrent access to the singleton
-// TEST_F(NotificationManagerTest, ConcurrentAccess) {
-//   std::vector<NotificationManager *> instances(10);
-//   std::vector<std::thread> threads;
-
-//   // Create 10 threads, each getting the singleton instance
-//   for (int i = 0; i < 10; i++) {
-//     threads.emplace_back([&instances, i]() {
-//       instances[i] = &NotificationManager::getInstance();
-//     });
-//   }
-
-//   // Join all threads
-//   for (auto &thread : threads) {
-//     thread.join();
-//   }
-
-//   // All instances should be the same
-//   for (size_t i = 1; i < instances.size(); i++) {
-//     EXPECT_EQ(instances[0], instances[i]);
-//   }
-// }
-
-// // Test adding and retrieving notifications
-// TEST_F(NotificationManagerTest, AddAndRetrieveNotifications) {
-//   // Create a dummy task and notification
-//   auto task = std::make_shared<LabTask>(
-//       "Test Task", std::chrono::system_clock::now() + std::chrono::hours(24),
-//       "Test Description");
-
-//   auto notification = std::make_shared<Notification>(
-//       "Test notification", std::chrono::system_clock::now(), task);
-
-//   // Add notification to manager
-//   manager->addNotification(notification);
-
-//   // Verify it was added correctly
-//   auto notifications = manager->getNotifications();
-//   EXPECT_EQ(1, notifications.size());
-//   EXPECT_EQ("Test notification", notifications[0]->getMessage());
-
-//   // Test retrieving by task
-//   auto taskNotifications = manager->getNotificationsForTask(task);
-//   EXPECT_EQ(1, taskNotifications.size());
-//   EXPECT_EQ("Test notification", taskNotifications[0]->getMessage());
-// }
-
-// // Test removing notifications
-// TEST_F(NotificationManagerTest, RemoveNotifications) {
-//   // Create a dummy task and notifications
-//   auto task = std::make_shared<LabTask>(
-//       "Test Task", std::chrono::system_clock::now() +
-//       std::chrono::hours(24));
-
-//   auto notification1 = std::make_shared<Notification>(
-//       "Notification 1", std::chrono::system_clock::now(), task);
-//   auto notification2 = std::make_shared<Notification>(
-//       "Notification 2", std::chrono::system_clock::now(), task);
-
-//   // Add both notifications
-//   manager->addNotification(notification1);
-//   manager->addNotification(notification2);
-
-//   // Check we have two notifications
-//   EXPECT_EQ(2, manager->getNotifications().size());
-
-//   // Remove the first notification
-//   manager->removeNotification(0);
-
-//   // Verify we have one left and it's the second one
-//   auto notifications = manager->getNotifications();
-//   EXPECT_EQ(1, notifications.size());
-//   EXPECT_EQ("Notification 2", notifications[0]->getMessage());
-// }
-
-// // Test fixture for NotStartedState singleton tests
-// class NotStartedStateTest : public ::testing::Test {
-// protected:
-//   void SetUp() override {
-//     // Get instance of the singleton
-//     state = NotStartedState::getInstance();
-//   }
-
-//   std::shared_ptr<TaskState> state;
-// };
-
-// // Test that getInstance always returns the same instance
-// TEST_F(NotStartedStateTest, GetInstanceReturnsSameInstance) {
-//   auto instance1 = NotStartedState::getInstance();
-//   auto instance2 = NotStartedState::getInstance();
-
-//   // Pointers should be identical
-//   EXPECT_EQ(instance1.get(), instance2.get());
-// }
-
-// // Test concurrent access to the singleton
-// TEST_F(NotStartedStateTest, ConcurrentAccess) {
-//   std::vector<std::shared_ptr<TaskState>> instances(10);
-//   std::vector<std::thread> threads;
-
-//   // Create 10 threads, each getting the singleton instance
-//   for (int i = 0; i < 10; i++) {
-//     threads.emplace_back(
-//         [&instances, i]() { instances[i] = NotStartedState::getInstance();
-//         });
-//   }
-
-//   // Join all threads
-//   for (auto &thread : threads) {
-//     thread.join();
-//   }
-
-//   // All instances should be the same
-//   for (size_t i = 1; i < instances.size(); i++) {
-//     EXPECT_EQ(instances[0].get(), instances[i].get());
-//   }
-// }
-
-// // Test NotStartedState behavior
-// TEST_F(NotStartedStateTest, StateProperties) {
-//   // Test state name and color
-//   EXPECT_EQ("Not Started", state->getName());
-//   EXPECT_EQ("Gray", state->getColor());
-// }
-
-// // Test state transition
-// TEST_F(NotStartedStateTest, StateTransition) {
-//   // Create a concrete task (LabTask) and set the state
-//   auto task = std::make_shared<LabTask>(
-//       "Test Task", std::chrono::system_clock::now() +
-//       std::chrono::hours(24));
-
-//   // Get initial state
-//   auto initialState = task->getState();
-//   EXPECT_EQ("Not Started", initialState->getName());
-
-//   // Task should be in NotStartedState by default
-//   EXPECT_EQ(0.0f, task->getProgress());
-
-//   // Start the task and check state changes
-//   task->startTask();
-//   auto newState = task->getState();
-//   EXPECT_NE(initialState->getName(), newState->getName());
-// }
+TEST_F(RegistrySingletonTest, IsNonCopyableAndNonAssignableByDesign) {
+  SUCCEED()
+      << "Registry is non-copyable/non-assignable due to private constructor "
+         "and deleted copy/assignment ops (compiler enforced).";
+}

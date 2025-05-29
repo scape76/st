@@ -4,6 +4,7 @@
 #include "Internship.h"
 #include "PerformanceVisitable.h"
 #include "PerformanceVisitor.h"
+#include "Resume.h"
 #include "Subject.h"
 #include <memory>
 #include <string>
@@ -12,6 +13,7 @@
 struct Registry : public PerformanceVisitable {
   std::unordered_map<std::string, std::shared_ptr<Subject>> subjects;
   std::unordered_map<std::string, std::shared_ptr<Internship>> internships;
+  std::unordered_map<std::string, std::shared_ptr<Resume>> resumes;
 
   static Registry &instance();
 

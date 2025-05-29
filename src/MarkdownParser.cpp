@@ -18,7 +18,7 @@ std::vector<Token> MarkdownTokenizer::tokenize() {
       }
       if (next_c == '#') {
         tokens.push_back({TokenType::HEADER2, "##"});
-        i++; // consume second #
+        i++;
       } else {
         tokens.push_back({TokenType::HEADER1, "#"});
       }
@@ -29,7 +29,7 @@ std::vector<Token> MarkdownTokenizer::tokenize() {
       }
       if (next_c == '*') {
         tokens.push_back({TokenType::BOLD_STAR, "**"});
-        i++; // consume second *
+        i++;
       } else {
         tokens.push_back({TokenType::ITALIC_STAR, "*"});
       }

@@ -1,19 +1,3 @@
-import { createRoute, Link, useRouter } from "@tanstack/react-router";
-import { rootRoute } from "./root";
-import { PlusIcon } from "lucide-react";
-
-import { KanbanDynamicOverlayDemo } from "@/components/SubjectTasks";
-
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { useState } from "react";
-import { useForm } from "@tanstack/react-form";
 import {
   Dialog,
   DialogContent,
@@ -22,59 +6,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useRouter } from "@tanstack/react-router";
+import { useState } from "react";
+import { indexRoute } from "../routes/index";
+import { useForm } from "@tanstack/react-form";
+import { Button } from "./ui/button";
+import { PlusIcon } from "lucide-react";
+import { Textarea } from "./ui/textarea";
 
-const subjectRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/subject/$code",
-  loader: ({ context, params }) => {
-    console.log("params ", params);
-    const subject = context.at.getSubject(params.code);
-    const tasks = context.at.getSubjectTasks(params.code);
-
-    return {
-      subject,
-      tasks,
-    };
-  },
-  component: Route,
-  notFoundComponent: () => "not Found!!",
-});
-
-function Route() {
-  const { subject, tasks } = subjectRoute.useLoaderData();
-
-  return (
-    <main className="container mx-auto p-8">
-      <div className="flex justify-between sm:items-center flex-col sm:flex-row gap-2 mb-6">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/">Панель</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{subject.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-        <CreateTaskDialog />
-      </div>
-      <KanbanDynamicOverlayDemo />
-    </main>
-  );
-}
-
-function CreateTaskDialog() {
+export function CreateSubjectDialog() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const at = subjectRoute.useRouteContext({
+  const at = indexRoute.useRouteContext({
     select: (c) => c.at,
   });
 
@@ -99,12 +45,12 @@ function CreateTaskDialog() {
       <DialogTrigger asChild>
         <Button variant="outline">
           <PlusIcon />
-          Додати Завдання
+          Створити Новий
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Нове Завдання</DialogTitle>
+          <DialogTitle>Новий Предмет</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
@@ -165,5 +111,3 @@ function CreateTaskDialog() {
     </Dialog>
   );
 }
-
-export { subjectRoute };

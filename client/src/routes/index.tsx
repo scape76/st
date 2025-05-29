@@ -1,4 +1,4 @@
-import { createRoute, Link, useRouter } from "@tanstack/react-router";
+import { createRoute, Link } from "@tanstack/react-router";
 import { Button } from "../components/ui/button";
 import { rootRoute } from "./root";
 import {
@@ -8,39 +8,51 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { useForm } from "@tanstack/react-form";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { PlusIcon } from "lucide-react";
+import { CreateSubjectDialog } from "@/components/CreateSubjectDialog";
+import { CreateInternshipDialog } from "@/components/CreateInternshipDialog";
+import type { Internship } from "@/types";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import {
+  formatDateDisplay,
+  getStatusVariant,
+  InternshipInfoDialog,
+} from "@/components/InternshipInfoDialog";
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   loader: ({ context }) => {
-    return context.at.getAllSubjects();
+    return {
+      subjects: context.at.getAllSubjects(),
+      resumes: context.at.getAllResumes(),
+      internships: context.at.getAllInternships(),
+    };
   },
   component: Route,
 });
 
 function Route() {
-  const subjects = indexRoute.useLoaderData();
+  const { subjects, internships, resumes } = indexRoute.useLoaderData();
 
-  console.log("subjects", subjects);
+  console.log("internships ", internships);
+
+  const [selectedInternship, setSelectedInternship] =
+    useState<Internship | null>(null);
+
+  const [isInternshipInfoOpen, setIsInternshipInfoOpen] = useState(false);
+
+  const handleInternshipCardClick = (internship: Internship) => {
+    setSelectedInternship(internship);
+    setIsInternshipInfoOpen(true);
+  };
 
   return (
     <main className="container mx-auto p-8">
       <div className="flex justify-between sm:items-center flex-col sm:flex-row gap-2">
         <h1 className="text-2xl font-bold">Мої Предмети</h1>
-        <CreateNewDialog />
+        <CreateSubjectDialog />
       </div>
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
         {subjects.map((subject) => {
@@ -62,100 +74,80 @@ function Route() {
           );
         })}
       </div>
+      <div className="flex justify-between sm:items-center flex-col sm:flex-row gap-2 mt-6">
+        <h1 className="text-2xl font-bold">Мої Резюме</h1>
+
+        <Button variant="outline" asChild>
+          <Link to="/create-resume">
+            <PlusIcon />
+            Нове Резюме
+          </Link>
+        </Button>
+      </div>
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+        {resumes.map((resume) => (
+          <Link
+            key={resume.id}
+            to="/resume/$id"
+            params={{ id: resume.id }}
+            className="block hover:shadow-lg transition-shadow rounded-lg"
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle>{resume.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="line-clamp-3 text-sm text-muted-foreground">
+                  {resume.body || "Опис відсутній."}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+      <div className="flex justify-between sm:items-center flex-col sm:flex-row gap-2 mt-6">
+        <h1 className="text-2xl font-bold">Мої Стажування</h1>
+
+        <CreateInternshipDialog />
+      </div>
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+        {internships.map((internship) => (
+          <Card
+            key={internship.id}
+            onClick={() => handleInternshipCardClick(internship)}
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+          >
+            <CardHeader>
+              <CardTitle>{internship.position}</CardTitle>
+              <CardDescription>{internship.company}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center">
+                <span className="text-sm mr-2">Статус:</span>
+                <Badge variant={getStatusVariant(internship.status)}>
+                  {internship.status}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                {formatDateDisplay(internship.startDate)} -{" "}
+                {formatDateDisplay(internship.endDate)}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+        {internships.length === 0 && (
+          <p className="text-muted-foreground col-span-full">
+            Стажування не знайдено.
+          </p>
+        )}
+      </div>
+
+      <InternshipInfoDialog
+        internship={selectedInternship}
+        open={isInternshipInfoOpen}
+        onOpenChange={setIsInternshipInfoOpen}
+      />
     </main>
-  );
-}
-
-function CreateNewDialog() {
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
-
-  const at = indexRoute.useRouteContext({
-    select: (c) => c.at,
-  });
-
-  const form = useForm({
-    defaultValues: {
-      name: "",
-      code: "",
-      description: "",
-    },
-    onSubmit: ({ value }) => {
-      console.log("value is ", value);
-      at.createSubject(value.name, value.code, value.description);
-      router.invalidate({
-        filter: (c) => c.fullPath === "/",
-      });
-      setOpen(false);
-    },
-  });
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Створити Новий</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Новий Предмет</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Назва
-            </Label>
-            <form.Field
-              name="name"
-              children={(field) => (
-                <Input
-                  id={field.name}
-                  value={field.state.value}
-                  className="col-span-3"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="code" className="text-right">
-              Код
-            </Label>
-            <form.Field
-              name="code"
-              children={(field) => (
-                <Input
-                  id={field.name}
-                  value={field.state.value}
-                  className="col-span-3"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="code" className="text-right">
-              Опис
-            </Label>
-            <form.Field
-              name="description"
-              children={(field) => (
-                <Textarea
-                  id={field.name}
-                  value={field.state.value}
-                  className="col-span-3"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              )}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" onClick={form.handleSubmit}>
-            Зберегти
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
 

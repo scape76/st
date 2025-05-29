@@ -2125,28 +2125,6 @@ async function createWasm() {
       return Emval.toHandle(v);
     };
 
-  var INT53_MAX = 9007199254740992;
-  
-  var INT53_MIN = -9007199254740992;
-  var bigintToI53Checked = (num) => (num < INT53_MIN || num > INT53_MAX) ? NaN : Number(num);
-  function __gmtime_js(time, tmPtr) {
-    time = bigintToI53Checked(time);
-  
-  
-      var date = new Date(time * 1000);
-      HEAP32[((tmPtr)>>2)] = date.getUTCSeconds();
-      HEAP32[(((tmPtr)+(4))>>2)] = date.getUTCMinutes();
-      HEAP32[(((tmPtr)+(8))>>2)] = date.getUTCHours();
-      HEAP32[(((tmPtr)+(12))>>2)] = date.getUTCDate();
-      HEAP32[(((tmPtr)+(16))>>2)] = date.getUTCMonth();
-      HEAP32[(((tmPtr)+(20))>>2)] = date.getUTCFullYear()-1900;
-      HEAP32[(((tmPtr)+(24))>>2)] = date.getUTCDay();
-      var start = Date.UTC(date.getUTCFullYear(), 0, 1, 0, 0, 0, 0);
-      var yday = ((date.getTime() - start) / (1000 * 60 * 60 * 24))|0;
-      HEAP32[(((tmPtr)+(28))>>2)] = yday;
-    ;
-  }
-
   var isLeapYear = (year) => year%4 === 0 && (year%100 !== 0 || year%400 === 0);
   
   var MONTH_DAYS_LEAP_CUMULATIVE = [0,31,60,91,121,152,182,213,244,274,305,335];
@@ -2160,6 +2138,10 @@ async function createWasm() {
       return yday;
     };
   
+  var INT53_MAX = 9007199254740992;
+  
+  var INT53_MIN = -9007199254740992;
+  var bigintToI53Checked = (num) => (num < INT53_MIN || num > INT53_MAX) ? NaN : Number(num);
   function __localtime_js(time, tmPtr) {
     time = bigintToI53Checked(time);
   
@@ -2322,7 +2304,6 @@ async function createWasm() {
       return 0;
     ;
   }
-
 
   var getHeapMax = () =>
       // Stay one Wasm page short of 4GB: while e.g. Chrome is able to allocate
@@ -5760,8 +5741,6 @@ var wasmImports = {
   /** @export */
   _emval_take_value: __emval_take_value,
   /** @export */
-  _gmtime_js: __gmtime_js,
-  /** @export */
   _localtime_js: __localtime_js,
   /** @export */
   _mktime_js: __mktime_js,
@@ -5769,8 +5748,6 @@ var wasmImports = {
   _tzset_js: __tzset_js,
   /** @export */
   clock_time_get: _clock_time_get,
-  /** @export */
-  emscripten_date_now: _emscripten_date_now,
   /** @export */
   emscripten_resize_heap: _emscripten_resize_heap,
   /** @export */

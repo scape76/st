@@ -4,8 +4,15 @@ import { indexRoute } from "./routes/index.js";
 
 import { rootRoute } from "./routes/root.js";
 import { subjectRoute } from "./routes/subject.js";
+import { createResumeRoute } from "./routes/create-resume.js";
+import { resumeRoute } from "./routes/resume.js";
 
-const routeTree = rootRoute.addChildren([indexRoute, subjectRoute]);
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  subjectRoute,
+  createResumeRoute,
+  resumeRoute,
+]);
 
 const router = createRouter({
   routeTree,

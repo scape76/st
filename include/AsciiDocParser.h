@@ -25,13 +25,13 @@ struct AsciiDocToken {
 
 struct AsciiDocHtmlNode {
   enum class Type {
-    DOCUMENT_ROOT, // A root node to hold everything
-    DOC_TITLE,     // Maps to <h1>
-    SECTION_H2,    // Maps to <h2>
-    SECTION_H3,    // Maps to <h3>
+    DOCUMENT_ROOT,
+    DOC_TITLE,
+    SECTION_H2,
+    SECTION_H3,
     PARAGRAPH,
-    BOLD,   // <strong>
-    ITALIC, // <em>
+    BOLD,
+    ITALIC,
     PLAIN_TEXT
   };
   Type type;
@@ -44,8 +44,7 @@ struct AsciiDocHtmlNode {
 
   std::string toHtml(int indent_level = 0) const {
     std::string html_string;
-    std::string indent(indent_level * 2,
-                       ' '); // Basic indentation for readability
+    std::string indent(indent_level * 2, ' ');
 
     std::string child_html;
     for (const auto &child : children) {
@@ -55,7 +54,7 @@ struct AsciiDocHtmlNode {
 
     switch (type) {
     case Type::DOCUMENT_ROOT:
-      return child_html; // Root doesn't have its own tags, just children
+      return child_html;
     case Type::DOC_TITLE:
       return indent + "<h1>" +
              (content.empty() ? child_html : content + child_html) + "</h1>\n";
@@ -66,7 +65,6 @@ struct AsciiDocHtmlNode {
       return indent + "<h3>" +
              (content.empty() ? child_html : content + child_html) + "</h3>\n";
     case Type::PARAGRAPH:
-      // Avoid empty <p></p> if only children are present and no direct content
       if (content.empty() && child_html.empty())
         return "";
       return indent + "<p>" +
@@ -79,7 +77,7 @@ struct AsciiDocHtmlNode {
       return "<em>" + (content.empty() ? child_html : content + child_html) +
              "</em>";
     case Type::PLAIN_TEXT:
-      return content; // Plain text usually doesn't get indented on its own line
+      return content;
     default:
       return "";
     }
@@ -101,21 +99,18 @@ private:
   const std::vector<AsciiDocToken> &tokens;
   size_t current_token_index;
 
-  // State for inline parsing
   bool in_bold_context;
   bool in_italic_context;
 
-  // Helper to parse a line of text potentially containing inline elements
   void
   parseLineContent(AsciiDocHtmlNode &parentNode,
                    AsciiDocTokenType terminator = AsciiDocTokenType::NEWLINE);
-  // Helper to get current token or EOF if out of bounds
   AsciiDocToken peek() const;
   AsciiDocToken consume();
 
 public:
   AsciiDocParser(const std::vector<AsciiDocToken> &toks);
-  AsciiDocHtmlNode parse(); // Returns a root HTML node
+  AsciiDocHtmlNode parse();
 };
 
 #endif // ASCIIDOC_PARSER_H

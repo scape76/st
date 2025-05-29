@@ -16,34 +16,33 @@ std::vector<AsciiDocToken> AsciiDocTokenizer::tokenize() {
         (currentIndex + 2 < source.length()) ? source[currentIndex + 2] : '\0';
 
     if (at_start_of_line) {
-      if (c == '=' && next_c == ' ') { // Document Title
+      if (c == '=' && next_c == ' ') {
         if (!current_text_segment.empty()) {
           tokens.push_back({AsciiDocTokenType::TEXT, current_text_segment});
           current_text_segment.clear();
         }
         tokens.push_back({AsciiDocTokenType::DOC_TITLE_MARKER, "= "});
-        currentIndex += 2; // Consume "= "
+        currentIndex += 2;
         at_start_of_line = false;
         continue;
-      } else if (c == '=' && next_c == '=' &&
-                 next_next_c == ' ') { // Section L1
+      } else if (c == '=' && next_c == '=' && next_next_c == ' ') {
         if (!current_text_segment.empty()) {
           tokens.push_back({AsciiDocTokenType::TEXT, current_text_segment});
           current_text_segment.clear();
         }
         tokens.push_back({AsciiDocTokenType::SECTION_L1_MARKER, "== "});
-        currentIndex += 3; // Consume "== "
+        currentIndex += 3;
         at_start_of_line = false;
         continue;
       } else if (c == '=' && next_c == '=' && next_next_c == '=' &&
                  (currentIndex + 3 < source.length() &&
-                  source[currentIndex + 3] == ' ')) { // Section L2
+                  source[currentIndex + 3] == ' ')) {
         if (!current_text_segment.empty()) {
           tokens.push_back({AsciiDocTokenType::TEXT, current_text_segment});
           current_text_segment.clear();
         }
         tokens.push_back({AsciiDocTokenType::SECTION_L2_MARKER, "=== "});
-        currentIndex += 4; // Consume "=== "
+        currentIndex += 4;
         at_start_of_line = false;
         continue;
       }

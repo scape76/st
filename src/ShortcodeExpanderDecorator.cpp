@@ -17,7 +17,6 @@ std::string ShortcodeExpanderDecorator::getHtml(const std::string &input) {
     return "Error: No wrapped provider.";
   }
 
-  // 2. Post-process the HTML to expand shortcodes
   std::cout << "[DECORATOR] Expanding shortcodes..." << std::endl;
   return expandShortcodes(initial_html);
 }

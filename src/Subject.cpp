@@ -1,5 +1,6 @@
 #include "../include/Subject.h"
 #include "../include/Task.h"
+#include "PerformanceVisitor.h"
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
@@ -34,6 +35,10 @@ void Subject::addTask(std::shared_ptr<Task> task) {
               << "' already exists in subject '" << this->name << "'."
               << std::endl;
   }
+}
+
+double Subject::accept(PerformanceVisitor &visitor) {
+  return visitor.visit(*this);
 }
 
 void Subject::removeTask(const std::string &title) {

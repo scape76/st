@@ -2,8 +2,6 @@
 
 #include "Task.h"
 #include <memory>
-#include <numeric>
-#include <stdexcept>
 #include <vector>
 
 class PerformanceStrategy {
